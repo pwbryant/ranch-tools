@@ -1,0 +1,26 @@
+<!-- preg_check.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pregnancy Check List</title>
+</head>
+<body>
+    <h1>List of Pregnancy Checks</h1>
+    
+    <form method="post" action="{% url 'preg-check' %}">
+        {% csrf_token %}
+        <label for="animal-id">Animal ID:</label>
+        <input type="text" id="animal-id" name="animal_id">
+        <button type="submit">Submit</button>
+    </form>
+    
+    <ul>
+        {% for preg_check in preg_checks %}
+            <li>{{ preg_check }}</li>
+        {% empty %}
+            <li>No pregnancy checks found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+

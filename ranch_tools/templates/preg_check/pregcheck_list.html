@@ -1,0 +1,105 @@
+{% load custom_filters %}
+<style>
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .form-container form {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px;
+  }
+
+  .form-container form button {
+    margin-top: 10px;
+  }
+
+  .result-container {
+    margin-top: 20px;
+    width: 100%;
+  }
+  .result-container table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .result-container th,
+  .result-container td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+  }
+
+  .result-container th:last-child,
+  .result-container td:last-child {
+    border-right: none;
+  }
+</style>
+
+<div class="container">
+  <div class="form-container">
+    <form method="get" action="">
+      {{ search_form.as_p }}
+      <button type="submit">Search For Animal</button>
+    </form>
+
+    <div class="result-container">
+      {% if pregchecks %}
+      <table>
+         <thead>
+            <tr>
+              <th>Preg Status</th>
+              <th>Check Date</th>
+              <th>Breeding Season</th>
+              {% if pregchecks|has_comments %}
+                  <th>Comments</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for pregcheck in pregchecks %}
+              <tr>
+                <td>{{ pregcheck.preg_status }}</td>
+                <td>{{ pregcheck.check_date }}</td>
+                <td>{{ pregcheck.breeding_season }}</td>
+                {% if pregcheck.comments %}
+                    <td>{{ pregcheck.comments }}</td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>	
+      {% else %}
+        {% if search_form.is_bound %}
+          <p>Animal ID not found</p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-container">
+    <form method="post" action="{% url 'pregcheck-create' %}">
+      {% csrf_token %}
+      {% if pregchecks %}
+          Animal ID: {{ search_form.animal_id.value }}
+      {% endif %}
+      {{ pregcheck_form.as_p }}
+      <button type="submit" {% if pregcheck_form.fields.animal_id.widget.attrs.disabled %}disabled{% endif %}>
+        Submit Preg Check
+      </button>
+    </form>
+  </div>
+</div>
