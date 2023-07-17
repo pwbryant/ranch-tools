@@ -1,6 +1,7 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import ListView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import CreateView, FormView
 from django.urls import reverse_lazy
 
 from .forms import AnimalSearchForm, PregCheckForm
@@ -44,10 +45,22 @@ class PregCheckListView(ListView):
         pregcheck_form = PregCheckForm()
         if animal_id and self.object_list.exists():
             pregcheck_form.fields['animal_id'].initial = animal_id
-            pregcheck_form.fields['status'].widget.attrs['disabled'] = False
+            pregcheck_form.fields['preg_status'].widget.attrs['disabled'] = False
         else:
-            pregcheck_form.fields['animal_id'].widget.attrs['disabled'] = True
+            pregcheck_form.fields['preg_status'].widget.attrs['disabled'] = True 
         context['search_form'] = search_form
         context['pregcheck_form'] = pregcheck_form
         return context
 
+
+class PregCheckCreateView(CreateView):
+    model = PregCheck
+    form_class = PregCheckForm
+    success_url = '/pregchecks/'  # Update with your desired success URL
+
+    def form_valid(self, form):
+        cow = Cow.objects.get(animal_id=form.cleaned_data['animal_id'])
+        preg_check_data = {'cow': cow, **form.cleaned_data}
+        preg_check_data.pop('animal_id')
+        self.object = PregCheck.objects.create(**preg_check_data)
+        return HttpResponseRedirect(self.get_success_url())

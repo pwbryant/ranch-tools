@@ -91,15 +91,23 @@
   </div>
 
   <div class="form-container">
-    <form method="post" action="{% url 'pregcheck-create' %}">
-      {% csrf_token %}
-      {% if pregchecks %}
-          Animal ID: {{ search_form.animal_id.value }}
-      {% endif %}
-      {{ pregcheck_form.as_p }}
-      <button type="submit" {% if pregcheck_form.fields.animal_id.widget.attrs.disabled %}disabled{% endif %}>
-        Submit Preg Check
-      </button>
-    </form>
+      <form method="post" action="{% url 'pregcheck-create' %}">
+        {% csrf_token %}
+        {% if pregchecks %}
+	  <label for="{{ pregcheck_form.animal_id.id_for_label }}">Animal ID</label>
+          {{ pregcheck_form.animal_id }}
+        {% endif %}
+        <label for="{{ pregcheck_form.location.id_for_label }}">Location</label>
+        {{ pregcheck_form.location }}
+        <label for="{{ pregcheck_form.breeding_season.id_for_label }}">Breeding Season</label>
+        {{ pregcheck_form.breeding_season }}
+        <label for="{{ pregcheck_form.comments.id_for_label }}">Comments</label>
+        {{ pregcheck_form.comments }}
+        <label for="{{ pregcheck_form.preg_status.id_for_label }}">Status</label>
+        {{ pregcheck_form.preg_status }}
+        <button type="submit" {% if pregcheck_form.fields.preg_status.widget.attrs.disabled %}disabled{% endif %}>
+          Submit Preg Check
+        </button>
+      </form>
   </div>
 </div>

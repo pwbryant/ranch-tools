@@ -1,14 +1,29 @@
 from django import forms
 
+from .models import PregCheck
+
+
 
 class AnimalSearchForm(forms.Form):
     animal_id = forms.CharField(label='Animal ID')
 
 
-class PregCheckForm(forms.Form):
-    animal_id = forms.CharField(widget=forms.HiddenInput())
-    STATUS_CHOICES = [
-        ('P', 'Pregnant'),
-        ('O', 'Open'),
-    ]
-    status = forms.ChoiceField(choices=STATUS_CHOICES, widget=forms.RadioSelect)
+class PregCheckForm(forms.ModelForm):
+    animal_id = forms.CharField(label='Animal ID')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['preg_status'].widget.choices = [('P', 'Pregnant'), ('O', 'Open')]
+        self.fields['animal_id'].widget.attrs['readonly'] = True
+
+
+    class Meta:
+        model = PregCheck
+        fields = ['preg_status', 'location', 'breeding_season', 'comments']
+        widgets = {
+            'preg_status': forms.RadioSelect,
+            'location': forms.Select,
+            'breeding_season': forms.TextInput(attrs={'pattern': '\d{4}', 'title': 'Please enter a four-digit year'}),
+            'comments': forms.Textarea,
+        }
+

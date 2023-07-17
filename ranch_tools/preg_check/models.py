@@ -33,7 +33,7 @@ class PregCheck(models.Model):
 	comments = models.TextField(blank=True)
 	cow = models.ForeignKey('Cow', on_delete=models.CASCADE)
 	location = models.ForeignKey('Location', on_delete=models.SET_NULL, null=True)
-	preg_status = models.CharField(max_length=1, choices=PREG_STATUS_CHOICES)
+	preg_status = models.CharField(max_length=1, choices=PREG_STATUS_CHOICES, blank=False)
 
 	def __repr__(self):
 		return f'{self.cow} - {self.preg_status} - {self.check_date}'
