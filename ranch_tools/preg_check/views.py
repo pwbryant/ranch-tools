@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, FormView
@@ -11,6 +11,7 @@ from pdb import set_trace as bp
 
 
 
+x = """
 class PregCheckCreateView(FormView):
     form_class = PregCheckForm
     template_name = 'pregcheck_create.html'
@@ -23,6 +24,24 @@ class PregCheckCreateView(FormView):
         # Perform the necessary operations, e.g., create a new PregCheck instance
 
         return super().form_valid(form)
+"""
+
+
+class PregCheckCreateView(FormView):
+    form_class = PregCheckForm
+    template_name = 'pregcheck_create.html'
+    success_url = reverse_lazy('pregcheck-list')
+
+    def form_valid(self, form):
+        # Handle form submission logic here
+        animal_id = form.cleaned_data['pregcheck_animal_id']
+        status = form.cleaned_data['preg_status']
+        # Perform the necessary operations, e.g., create a new PregCheck instance
+
+        return JsonResponse({'success': True})  # Return success response
+
+    def form_invalid(self, form):
+        return JsonResponse({'success': False})  # Return error response
 
 
 class PregCheckListView(ListView):
@@ -31,7 +50,7 @@ class PregCheckListView(ListView):
     context_object_name = 'pregchecks'
 
     def get_queryset(self):
-        animal_id = self.request.GET.get('animal_id', None)
+        animal_id = self.request.GET.get('search_animal_id', None)
         if animal_id:
             queryset = PregCheck.objects.filter(cow__animal_id=animal_id).order_by('-check_date')[:3]
         else:
@@ -40,11 +59,12 @@ class PregCheckListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        animal_id = self.request.GET.get('animal_id', None)
-        search_form = AnimalSearchForm(initial={'animal_id': animal_id})
+        animal_id = self.request.GET.get('search_animal_id', None)
+        print(self.request.GET)
+        search_form = AnimalSearchForm(initial={'search_animal_id': animal_id})
         pregcheck_form = PregCheckForm()
         if animal_id and self.object_list.exists():
-            pregcheck_form.fields['animal_id'].initial = animal_id
+            pregcheck_form.fields['pregcheck_animal_id'].initial = animal_id
             pregcheck_form.fields['preg_status'].widget.attrs['disabled'] = False
         else:
             pregcheck_form.fields['preg_status'].widget.attrs['disabled'] = True 
@@ -56,11 +76,11 @@ class PregCheckListView(ListView):
 class PregCheckCreateView(CreateView):
     model = PregCheck
     form_class = PregCheckForm
-    success_url = '/pregchecks/'  # Update with your desired success URL
+    success_url = '/pregchecks/'
 
     def form_valid(self, form):
-        cow = Cow.objects.get(animal_id=form.cleaned_data['animal_id'])
+        cow = Cow.objects.get(animal_id=form.cleaned_data['pregcheck_animal_id'])
         preg_check_data = {'cow': cow, **form.cleaned_data}
-        preg_check_data.pop('animal_id')
+        preg_check_data.pop('pregcheck_animal_id')
         self.object = PregCheck.objects.create(**preg_check_data)
         return HttpResponseRedirect(self.get_success_url())

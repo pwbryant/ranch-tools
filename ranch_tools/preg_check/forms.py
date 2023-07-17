@@ -5,16 +5,16 @@ from .models import PregCheck
 
 
 class AnimalSearchForm(forms.Form):
-    animal_id = forms.CharField(label='Animal ID')
+    search_animal_id = forms.CharField(label='Animal ID')
 
 
 class PregCheckForm(forms.ModelForm):
-    animal_id = forms.CharField(label='Animal ID')
+    pregcheck_animal_id = forms.CharField(label='Animal ID')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['preg_status'].widget.choices = [('P', 'Pregnant'), ('O', 'Open')]
-        self.fields['animal_id'].widget.attrs['readonly'] = True
+        self.fields['pregcheck_animal_id'].widget.attrs['readonly'] = True
 
 
     class Meta:

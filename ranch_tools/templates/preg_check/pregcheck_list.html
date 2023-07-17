@@ -47,11 +47,55 @@
   .result-container td:last-child {
     border-right: none;
   }
+
+.modal {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+z-index: 9999;
+background-color: rgba(0, 0, 0, 0.5);
+width: 100%;
+height: 100%;
+overflow: auto;
+}
+
+.modal-content {
+background-color: #fff;
+margin: auto;
+padding: 20px;
+border: 1px solid #ccc;
+border-radius: 4px;
+max-width: 500px;
+max-height: 80vh;
+overflow-y: auto;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);`
+}
+
+.close {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+color: black;
+text-decoration: none;
+cursor: pointer;
+}
+
 </style>
 
 <div class="container">
   <div class="form-container">
-    <form method="get" action="">
+    <form id="search-form" method="get" action="">
       {{ search_form.as_p }}
       <button type="submit">Search For Animal</button>
     </form>
@@ -89,25 +133,106 @@
       {% endif %}
     </div>
   </div>
+<div class="form-container">
 
-  <div class="form-container">
-      <form method="post" action="{% url 'pregcheck-create' %}">
-        {% csrf_token %}
-        {% if pregchecks %}
-	  <label for="{{ pregcheck_form.animal_id.id_for_label }}">Animal ID</label>
-          {{ pregcheck_form.animal_id }}
-        {% endif %}
-        <label for="{{ pregcheck_form.location.id_for_label }}">Location</label>
-        {{ pregcheck_form.location }}
-        <label for="{{ pregcheck_form.breeding_season.id_for_label }}">Breeding Season</label>
-        {{ pregcheck_form.breeding_season }}
-        <label for="{{ pregcheck_form.comments.id_for_label }}">Comments</label>
-        {{ pregcheck_form.comments }}
-        <label for="{{ pregcheck_form.preg_status.id_for_label }}">Status</label>
-        {{ pregcheck_form.preg_status }}
-        <button type="submit" {% if pregcheck_form.fields.preg_status.widget.attrs.disabled %}disabled{% endif %}>
-          Submit Preg Check
-        </button>
-      </form>
+<form id="pregcheck-form" method="post" action="{% url 'pregcheck-create' %}">
+  {% csrf_token %}
+  {% if pregchecks %}
+    <label for="{{ pregcheck_form.pregcheck_animal_id.id_for_label }}">Animal ID</label>
+    {{ pregcheck_form.pregcheck_animal_id }}
+  {% endif %}
+  <label for="{{ pregcheck_form.location.id_for_label }}">Location</label>
+  {{ pregcheck_form.location }}
+  <label for="{{ pregcheck_form.breeding_season.id_for_label }}">Breeding Season</label>
+  {{ pregcheck_form.breeding_season }}
+  <label for="{{ pregcheck_form.comments.id_for_label }}">Comments</label>
+  {{ pregcheck_form.comments }}
+  <label for="{{ pregcheck_form.preg_status.id_for_label }}">Status</label>
+  {{ pregcheck_form.preg_status }}
+  <button id="submit-btn" type="submit" {% if pregcheck_form.fields.preg_status.widget.attrs.disabled %}disabled{% endif %}>
+    Submit Preg Check
+  </button>
+</form>
+</div>
+
+<div id="message-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <div id="message-container"></div>
+    <button id="continue-btn">Continue</button>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('pregcheck-form');
+    var searchForm = document.getElementById('search-form');
+    var messageContainer = document.getElementById('message-container');
+    var modal = document.getElementById('message-modal');
+    var continueBtn = document.getElementById('continue-btn');
+    var resultContainer = document.querySelector('.result-container');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent normal form submission
+      var formData = new FormData(form);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open(form.method, form.action, true);
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          // Display success message
+          messageContainer.textContent = 'PregCheck created successfully';
+          messageContainer.classList.add('success');
+          modal.style.display = 'block';
+
+          // Reset the form inputs
+          form.reset();
+          searchForm.reset();
+          document.getElementById('id_search_animal_id').value = '';
+          document.getElementById('id_pregcheck_animal_id').value = '';
+
+          // Clear result container
+          resultContainer.innerHTML = '';
+          console.log('res cont cleared?');
+        } else {
+          // Display error message
+          messageContainer.textContent = 'Something went wrong';
+          messageContainer.classList.add('error');
+          modal.style.display = 'block';
+        }
+      };
+      xhr.onerror = function() {
+        // Display error message
+        messageContainer.textContent = 'Something went wrong';
+        messageContainer.classList.add('error');
+        modal.style.display = 'block';
+      };
+      xhr.send(formData);
+    });
+
+    continueBtn.addEventListener('click', function() {
+      modal.style.display = 'none';
+    });
+
+    var closeModal = function() {
+      modal.style.display = 'none';
+    };
+
+    var closeBtn = document.querySelector('.close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
+
+    window.addEventListener('click', function(event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Initially hide the modal
+    modal.style.display = 'none';
+  });
+</script>
+
+
