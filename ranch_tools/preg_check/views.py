@@ -52,7 +52,7 @@ class PregCheckListView(ListView):
     def get_queryset(self):
         animal_id = self.request.GET.get('search_animal_id', None)
         if animal_id:
-            queryset = PregCheck.objects.filter(cow__animal_id=animal_id).order_by('-check_date')[:3]
+            queryset = PregCheck.objects.filter(cow__animal_id=animal_id).order_by('-check_date', '-id')[:3]
         else:
             queryset = PregCheck.objects.none()
         return queryset
@@ -60,7 +60,6 @@ class PregCheckListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         animal_id = self.request.GET.get('search_animal_id', None)
-        print(self.request.GET)
         search_form = AnimalSearchForm(initial={'search_animal_id': animal_id})
         pregcheck_form = PregCheckForm()
         if animal_id and self.object_list.exists():

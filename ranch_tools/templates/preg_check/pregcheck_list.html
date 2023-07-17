@@ -186,15 +186,28 @@ cursor: pointer;
           messageContainer.classList.add('success');
           modal.style.display = 'block';
 
-          // Reset the form inputs
-          form.reset();
-          searchForm.reset();
-          document.getElementById('id_search_animal_id').value = '';
-          document.getElementById('id_pregcheck_animal_id').value = '';
+        // Reset the form inputs
+        form.reset();
+        document.getElementById('id_search_animal_id').value = '';
+        // Remove animal_id input and label
+        var animalIdInput = document.getElementById('id_pregcheck_animal_id');
+        var animalIdLabel = document.querySelector('label[for="id_pregcheck_animal_id"]');
+        if (animalIdInput && animalIdLabel) {
+              animalIdInput.remove();
+              animalIdLabel.remove();
+        }
 
-          // Clear result container
-          resultContainer.innerHTML = '';
-          console.log('res cont cleared?');
+        // Clear result container
+        var resultContainer = document.querySelector('.result-container');
+        if (resultContainer) {
+              resultContainer.innerHTML = '';
+        }
+
+        // Remove query parameters from URL
+        if (window.history && window.history.replaceState) {
+              var newUrl = window.location.href.split('?')[0];
+              window.history.replaceState({ path: newUrl }, '', newUrl);
+        }
         } else {
           // Display error message
           messageContainer.textContent = 'Something went wrong';
