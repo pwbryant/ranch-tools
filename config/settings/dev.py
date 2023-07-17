@@ -8,3 +8,4 @@ NOTEBOOK_ARGUMENTS = [
     '--allow-root',
     '--no-browser'
 ]
+CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.app']
