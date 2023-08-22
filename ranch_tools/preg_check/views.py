@@ -10,23 +10,6 @@ from .models import Cow, PregCheck
 from pdb import set_trace as bp
 
 
-
-x = """
-class PregCheckCreateView(FormView):
-    form_class = PregCheckForm
-    template_name = 'pregcheck_create.html'
-    success_url = reverse_lazy('pregcheck-list')
-
-    def form_valid(self, form):
-        # Handle form submission logic here
-        animal_id = form.cleaned_data['animal_id']
-        status = form.cleaned_data['status']
-        # Perform the necessary operations, e.g., create a new PregCheck instance
-
-        return super().form_valid(form)
-"""
-
-
 class PregCheckCreateView(FormView):
     form_class = PregCheckForm
     template_name = 'pregcheck_create.html'
