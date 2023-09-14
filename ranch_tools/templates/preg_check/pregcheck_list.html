@@ -163,6 +163,16 @@ cursor: pointer;
   </div>
 </div>
 
+<!-- Add this modal at the end of the template -->
+<div id="new-animal-modal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p id="modal-message"></p>
+    <button id="record-pregcheck">Record Preg Check For New Animal</button>
+    <button id="cancel">Cancel</button>
+  </div>
+</div>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var form = document.getElementById('pregcheck-form');
@@ -245,6 +255,41 @@ cursor: pointer;
 
     // Initially hide the modal
     modal.style.display = 'none';
+  });
+</script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ...
+
+    var animalExists = "{{ animal_exists }}";
+
+    if (animalExists === "False") {
+      modal.style.display = 'block';
+      document.getElementById('modal-message').textContent = 'Animal does not exist.';
+      document.getElementById('record-pregcheck').addEventListener('click', function() {
+        var animalIdInput = document.getElementById('id_pregcheck_animal_id');
+        animalIdInput.value = formData.get('pregcheck_animal_id');
+        animalIdInput.style.display = 'block';
+
+        var birthYearInput = document.createElement('input');
+        birthYearInput.type = 'text';
+        birthYearInput.name = 'birth_year';
+        birthYearInput.placeholder = 'Enter Birth Year';
+        form.appendChild(birthYearInput);
+
+        modal.style.display = 'none';
+      });
+
+      document.getElementById('cancel').addEventListener('click', function() {
+        var searchAnimalIdInput = document.getElementById('id_search_animal_id');
+        searchAnimalIdInput.value = '';
+        modal.style.display = 'none';
+      });
+    }
+
+    // ...
   });
 </script>
 

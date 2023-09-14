@@ -10,12 +10,12 @@ class AnimalSearchForm(forms.Form):
 
 class PregCheckForm(forms.ModelForm):
     pregcheck_animal_id = forms.CharField(label='Animal ID')
+    birth_year = forms.CharField(label='Birth Year')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['preg_status'].widget.choices = [('P', 'Pregnant'), ('O', 'Open')]
         self.fields['pregcheck_animal_id'].widget.attrs['readonly'] = True
-
 
     class Meta:
         model = PregCheck
