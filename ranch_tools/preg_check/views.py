@@ -6,6 +6,8 @@ from django.views.generic import ListView, CreateView, FormView
 from .models import Cow, PregCheck
 from .forms import AnimalSearchForm, PregCheckForm
 
+from pdb import set_trace as bp
+
 
 class PregCheckListView(ListView):
     model = PregCheck
