@@ -25,7 +25,12 @@
           <tbody>
             {% for pregcheck in pregchecks %}
               <tr>
-                <td>{{ pregcheck.pregnant }}</td>
+                {% if pregcheck.is_pregnant %}
+                    <td>Pregnant</td>
+                {% else %}
+                    <td>Open</td>
+                {% endif %}
+                <td>{{ pregcheck.is_pregnant }}</td>
                 <td>{{ pregcheck.check_date }}</td>
                 <td>{{ pregcheck.breeding_season }}</td>
                 {% if pregcheck.comments %}
@@ -52,9 +57,9 @@
   {{ pregcheck_form.breeding_season }}
   <label for="{{ pregcheck_form.comments.id_for_label }}">Comments</label>
   {{ pregcheck_form.comments }}
-  <label for="{{ pregcheck_form.pregnant.id_for_label }}">Status</label>
-  {{ pregcheck_form.pregnant }}
-  <button id="submit-btn" type="submit" {% if pregcheck_form.fields.pregnant.widget.attrs.disabled %}disabled{% endif %}>
+  <label for="{{ pregcheck_form.is_pregnant.id_for_label }}">Status</label>
+  {{ pregcheck_form.is_pregnant }}
+  <button id="submit-btn" type="submit" {% if pregcheck_form.fields.is_pregnant.widget.attrs.disabled %}disabled{% endif %}>
     Submit Preg Check
   </button>
 </form>
