@@ -11,16 +11,15 @@ class PregCheckForm(forms.ModelForm):
     pregcheck_animal_id = forms.CharField(label='Animal ID', required=False)
     birth_year = forms.CharField(label='Birth Year', required=False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['preg_status'].widget.choices = [('P', 'Pregnant'), ('O', 'Open')]
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
         # self.fields['pregcheck_animal_id'].widget.attrs['readonly'] = True
 
     class Meta:
         model = PregCheck
-        fields = ['preg_status', 'breeding_season', 'comments']
+        fields = ['is_pregnant', 'breeding_season', 'comments']
         widgets = {
-            'preg_status': forms.RadioSelect,
+            'is_pregnant': forms.RadioSelect(choices=((True, 'Pregnant'), (False, 'Open'))),
             'breeding_season': forms.TextInput(attrs={'pattern': '\d{4}', 'title': 'Please enter a four-digit year'}),
             'comments': forms.Textarea,
         }

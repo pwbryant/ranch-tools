@@ -24,7 +24,7 @@ def test_pregcheck_form_valid():
         'birth_year': 2019,
         'breeding_season': 2022,
         'comments': 'Test Comment',
-        'preg_status': 'P',
+        'is_pregnant': 'P',
     })
     assert form.is_valid()
 
@@ -34,7 +34,7 @@ def test_pregcheck_form_valid_without_animal_id_and_birth_year():
     form = PregCheckForm(data={
         'breeding_season': 2022,
         'comments': 'Test Comment',
-        'preg_status': 'P',
+        'is_pregnant': 'P',
     })
     assert form.is_valid()
 
