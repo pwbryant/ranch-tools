@@ -60,8 +60,9 @@ class PregCheckRecordNewAnimalView(CreateView):
         animal_id = form.cleaned_data['pregcheck_animal_id']
         birth_year = form.cleaned_data['birth_year']
 
-        cow, created = Cow.objects.get_or_create(animal_id=animal_id, defaults={'birth_year': birth_year})
-        form.instance.cow = cow
+        if animal_id:
+            cow, created = Cow.objects.get_or_create(animal_id=animal_id, defaults={'birth_year': birth_year})
+            form.instance.cow = cow
 
         return super().form_valid(form)
 
