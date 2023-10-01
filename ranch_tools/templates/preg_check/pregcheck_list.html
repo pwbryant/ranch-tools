@@ -1,97 +1,6 @@
 {% load custom_filters %}
-<style>
-  .container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
-  }
-
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-start;
-  }
-
-  .form-container form {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #ccc;
-    padding: 20px;
-    margin: 20px;
-  }
-
-  .form-container form button {
-    margin-top: 10px;
-  }
-
-  .result-container {
-    margin-top: 20px;
-    width: 100%;
-  }
-  .result-container table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  .result-container th,
-  .result-container td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-  }
-
-  .result-container th:last-child,
-  .result-container td:last-child {
-    border-right: none;
-  }
-
-.modal {
-display: none;
-position: fixed;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-z-index: 9999;
-background-color: rgba(0, 0, 0, 0.5);
-width: 100%;
-height: 100%;
-overflow: auto;
-}
-
-.modal-content {
-background-color: #fff;
-margin: auto;
-padding: 20px;
-border: 1px solid #ccc;
-border-radius: 4px;
-max-width: 500px;
-max-height: 80vh;
-overflow-y: auto;
-position: fixed;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);`
-}
-
-.close {
-color: #aaa;
-float: right;
-font-size: 28px;
-font-weight: bold;
-cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-color: black;
-text-decoration: none;
-cursor: pointer;
-}
-
-</style>
+{% load static %}
+<link rel="stylesheet"  type="text/css" href="{% static 'preg_check/styles.css' %}">
 
 <div class="container">
   <div class="form-container">
@@ -137,12 +46,8 @@ cursor: pointer;
 
 <form id="pregcheck-form" method="post" action="{% url 'pregcheck-create' %}">
   {% csrf_token %}
-  {% if pregchecks %}
-    <label for="{{ pregcheck_form.pregcheck_animal_id.id_for_label }}">Animal ID</label>
-    {{ pregcheck_form.pregcheck_animal_id }}
-  {% endif %}
-  <label for="{{ pregcheck_form.location.id_for_label }}">Location</label>
-  {{ pregcheck_form.location }}
+  <label for="{{ pregcheck_form.pregcheck_animal_id.id_for_label }}">Animal ID</label>
+  {{ pregcheck_form.pregcheck_animal_id }}
   <label for="{{ pregcheck_form.breeding_season.id_for_label }}">Breeding Season</label>
   {{ pregcheck_form.breeding_season }}
   <label for="{{ pregcheck_form.comments.id_for_label }}">Comments</label>
@@ -264,8 +169,11 @@ cursor: pointer;
     // ...
 
     var animalExists = "{{ animal_exists }}";
+    console.log('above animal exists cond check');
 
     if (animalExists === "False") {
+      console.log('animal exists False');
+
       modal.style.display = 'block';
       document.getElementById('modal-message').textContent = 'Animal does not exist.';
       document.getElementById('record-pregcheck').addEventListener('click', function() {

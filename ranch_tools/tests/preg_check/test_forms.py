@@ -28,6 +28,7 @@ def test_pregcheck_form_valid():
     })
     assert form.is_valid()
 
+
 @pytest.mark.django_db
 def test_pregcheck_form_valid_without_animal_id_and_birth_year():
     form = PregCheckForm(data={

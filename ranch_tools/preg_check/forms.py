@@ -14,7 +14,7 @@ class PregCheckForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['preg_status'].widget.choices = [('P', 'Pregnant'), ('O', 'Open')]
-        self.fields['pregcheck_animal_id'].widget.attrs['readonly'] = True
+        # self.fields['pregcheck_animal_id'].widget.attrs['readonly'] = True
 
     class Meta:
         model = PregCheck

@@ -8,7 +8,7 @@ PREG_STATUS_CHOICES = (('O', 'Open',), ('P', 'Pregnant',))
 
 class Cow(models.Model):
     animal_id = models.CharField(max_length=10, unique=True)
-    birth_year = models.IntegerField()
+    birth_year = models.IntegerField(blank=True, null=True)
 
     def __repr__(self):
         return self.animal_id

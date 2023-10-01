@@ -29,11 +29,8 @@ class PregCheckListView(ListView):
         pregcheck_form = PregCheckForm()
         animal_exists = Cow.objects.filter(animal_id=animal_id).exists()
 
-        if animal_id and self.object_list.exists():
+        if animal_id:
             pregcheck_form.fields['pregcheck_animal_id'].initial = animal_id
-            pregcheck_form.fields['preg_status'].widget.attrs['disabled'] = False
-        else:
-            pregcheck_form.fields['preg_status'].widget.attrs['disabled'] = True
 
         context['search_form'] = search_form
         context['pregcheck_form'] = pregcheck_form
@@ -63,6 +60,7 @@ class PregCheckRecordNewAnimalView(CreateView):
         birth_year = form.cleaned_data['birth_year']
 
         if animal_id:
+            birth_year = None if not birth_year else birth_year
             cow, created = Cow.objects.get_or_create(animal_id=animal_id, defaults={'birth_year': birth_year})
             form.instance.cow = cow
 
