@@ -2,6 +2,8 @@ from django import forms
 
 from .models import PregCheck
 
+from pdb import set_trace as bp
+
 
 class AnimalSearchForm(forms.Form):
     search_animal_id = forms.CharField(label='Animal ID')
@@ -10,10 +12,18 @@ class AnimalSearchForm(forms.Form):
 class PregCheckForm(forms.ModelForm):
     pregcheck_animal_id = forms.CharField(label='Animal ID', required=False)
     birth_year = forms.CharField(label='Birth Year', required=False)
+    is_pregnant = forms.ChoiceField(
+        label='Status',
+        choices=((True, 'Pregnant'), (False, 'Open')),
+        widget=forms.RadioSelect(),
+        required=True,
+    )
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-        # self.fields['pregcheck_animal_id'].widget.attrs['readonly'] = True
+    # def clean_is_pregnant(self):
+    #     is_pregnant = self.cleaned_data.get('is_pregnant')
+    #     if is_pregnant is None:
+    #         raise forms.ValidationError("Please select either 'Open' or 'Pregnant'.")
+    #     return is_pregnant
 
     class Meta:
         model = PregCheck
