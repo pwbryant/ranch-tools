@@ -222,20 +222,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleStats = document.getElementById('toggle-stats');
 
     // Function to calculate and display summary stats
-    function updateStats() {
-        // You'll need to fetch and calculate the stats here
-        // Example: Total Pregnant, Total Open, Total Count, Pregnancy Rate
-        // You can use AJAX to fetch these stats from your Django backend
+	function updateStats() {
+		// Make an AJAX request to fetch the summary stats
+		fetch('{% url "pregcheck-summary-stats" %}')
+			.then(response => response.json())
+			.then(data => {
+				// Update the stats content with the fetched data
+				statsContent.innerHTML = `
+					<h2>Summary Stats</h2>
+					<p>Total Pregnant: ${data.total_pregnant}</p>
+					<p>Total Open: ${data.total_open}</p>
+					<p>Total Count: ${data.total_count}</p>
+					<p>Pregnancy Rate: ${data.pregnancy_rate.toFixed(2)}%</p>
+				`;
+			})
+			.catch(error => {
+				console.error('Error fetching summary stats:', error);
+				statsContent.innerHTML = 'Error fetching summary stats.';
+			});
+	}
 
-        // For now, let's just display some dummy data
-        statsContent.innerHTML = `
-            <h2>Summary Stats</h2>
-            <p>Total Pregnant: 10</p>
-            <p>Total Open: 5</p>
-            <p>Total Count: 15</p>
-            <p>Pregnancy Rate: 66.67%</p>
-        `;
-    }
+
 	updateStats();
 });
 
