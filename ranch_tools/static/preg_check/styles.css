@@ -89,3 +89,11 @@
     cursor: pointer;
 }
 
+.form-group {
+	display: flex;
+	align-items: center;
+}
+
+.checkbox-input {
+	margin-left: 10px; /* Adjust the margin as needed for spacing */
+}

@@ -1,6 +1,9 @@
+from datetime import datetime
+
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.urls import reverse
+from django.views import View
 from django.views.generic import ListView, CreateView, FormView
 
 from .models import Cow, PregCheck
@@ -32,6 +35,8 @@ class PregCheckListView(ListView):
         if animal_id:
             pregcheck_form.fields['pregcheck_animal_id'].initial = animal_id
 
+        pregcheck_form.fields['breeding_season'].initial = datetime.now().year
+
         context['search_form'] = search_form
         context['pregcheck_form'] = pregcheck_form
         context['animal_exists'] = animal_exists
@@ -53,6 +58,7 @@ class PregCheckRecordNewAnimalView(CreateView):
         animal_id = self.kwargs.get('animal_id')
         if animal_id:
             initial['pregcheck_animal_id'] = animal_id
+
         return initial
 
     def form_valid(self, form):
@@ -79,3 +85,27 @@ class PregCheckRecordNewAnimalView(CreateView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+
+
+class PregCheckSummaryStatsView(View):
+    def get(self, request, *args, **kwargs):
+        # Calculate your summary stats here
+        total_pregnant = PregCheck.objects.filter(is_pregnant=True).count()
+        total_open = PregCheck.objects.filter(is_pregnant=False).count()
+        total_count = PregCheck.objects.count()
+
+        # Calculate pregnancy rate (percentage)
+        pregnancy_rate = (total_pregnant / total_count) * 100 if total_count > 0 else 0
+
+        # Prepare the data as a dictionary
+        summary_stats = {
+            'total_pregnant': total_pregnant,
+            'total_open': total_open,
+            'total_count': total_count,
+            'pregnancy_rate': pregnancy_rate,
+        }
+
+        # Return the data as JSON response
+        return JsonResponse(summary_stats)
+

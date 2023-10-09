@@ -3,6 +3,10 @@
 <link rel="stylesheet"  type="text/css" href="{% static 'preg_check/styles.css' %}">
 
 <div class="container">
+	<div id="stats-content">
+		<!-- Summary stats will be displayed here -->
+	</div>
+
   <div class="form-container">
     <form id="search-form" method="get" action="">
       {{ search_form.as_p }}
@@ -58,6 +62,12 @@
   {{ pregcheck_form.comments }}
   <label for="{{ pregcheck_form.is_pregnant.id_for_label }}">Status</label>
   {{ pregcheck_form.is_pregnant }}
+  <div class="form-group">
+      <label for="{{ pregcheck_form.recheck.id_for_label }}">Recheck</label>
+      <div class="checkbox-input">
+          {{ pregcheck_form.recheck }}
+      </div>
+  </div>
   <button id="submit-btn" type="submit" {% if pregcheck_form.fields.is_pregnant.widget.attrs.disabled %}disabled{% endif %}>
     Submit Preg Check
   </button>
@@ -205,4 +215,29 @@
   });
 </script>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tab = document.getElementById('tab');
+    const statsContent = document.getElementById('stats-content');
+    const toggleStats = document.getElementById('toggle-stats');
+
+    // Function to calculate and display summary stats
+    function updateStats() {
+        // You'll need to fetch and calculate the stats here
+        // Example: Total Pregnant, Total Open, Total Count, Pregnancy Rate
+        // You can use AJAX to fetch these stats from your Django backend
+
+        // For now, let's just display some dummy data
+        statsContent.innerHTML = `
+            <h2>Summary Stats</h2>
+            <p>Total Pregnant: 10</p>
+            <p>Total Open: 5</p>
+            <p>Total Count: 15</p>
+            <p>Pregnancy Rate: 66.67%</p>
+        `;
+    }
+	updateStats();
+});
+
+</script>
 

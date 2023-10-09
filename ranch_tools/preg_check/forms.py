@@ -18,16 +18,11 @@ class PregCheckForm(forms.ModelForm):
         widget=forms.RadioSelect(),
         required=True,
     )
-
-    # def clean_is_pregnant(self):
-    #     is_pregnant = self.cleaned_data.get('is_pregnant')
-    #     if is_pregnant is None:
-    #         raise forms.ValidationError("Please select either 'Open' or 'Pregnant'.")
-    #     return is_pregnant
+    recheck = forms.BooleanField(label='Recheck', required=False, widget=forms.CheckboxInput())
 
     class Meta:
         model = PregCheck
-        fields = ['is_pregnant', 'breeding_season', 'comments']
+        fields = ['is_pregnant', 'breeding_season', 'comments', 'recheck']
         widgets = {
             'is_pregnant': forms.RadioSelect(choices=((True, 'Pregnant'), (False, 'Open'))),
             'breeding_season': forms.TextInput(attrs={'pattern': '\d{4}', 'title': 'Please enter a four-digit year'}),
