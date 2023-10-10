@@ -90,14 +90,23 @@
 </div>
 
 <!-- Add this modal at the end of the template -->
-<div id="new-animal-modal" class="modal">
+<div id="no-animal-modal" class="modal">
   <div class="modal-content">
     <span class="close">&times;</span>
-    <p id="modal-message"></p>
-    <button id="record-pregcheck">Record Preg Check For New Animal</button>
-    <button id="cancel">Cancel</button>
+    <p>There is no animal associated with this ID. To create a new one, provide the birth year (optional) and click the "Create" button.</p>
+	<form id="create-animal-form" action="{% url 'cow-create' %}" method="post">
+	  {% csrf_token %}
+	  <label for="new_animal_id">Animal ID</label>
+	  <input type="text" id="new_animal_id" name="animal_id" value="{{ animal_id }}" readonly required>
+	  <label for="new_birth_year">Birth Year (optional)</label>
+	  <input type="text" id="new_birth_year" name="birth_year">
+	  <button id="create-animal-btn" type="submit">Create</button>
+	  <button id="cancel-create-btn" type="button">Cancel</button>
+	</form>
   </div>
 </div>
+
+
 
 <script>
     // Function to calculate and display summary stats
@@ -123,7 +132,6 @@
 	}
   document.addEventListener('DOMContentLoaded', function() {
     var form = document.getElementById('pregcheck-form');
-    var searchForm = document.getElementById('search-form');
     var messageContainer = document.getElementById('message-container');
     var modal = document.getElementById('message-modal');
     var continueBtn = document.getElementById('continue-btn');
@@ -132,6 +140,7 @@
     form.addEventListener('submit', function(event) {
       event.preventDefault(); // Prevent normal form submission
       var formData = new FormData(form);
+        console.log('submit', formData);
 
       var xhr = new XMLHttpRequest();
       xhr.open(form.method, form.action, true);
@@ -205,52 +214,78 @@
 
     // Initially hide the modal
     modal.style.display = 'none';
+
+    // Update summary stats
+    updateStats();
+
+
+  // New animal creation ---------------------------------------
+  var noAnimalModal = document.getElementById('no-animal-modal');
+  var createAnimalForm = document.getElementById('create-animal-form');
+  var createAnimalBtn = document.getElementById('create-animal-btn');
+  var cancelCreateBtn = document.getElementById('cancel-create-btn');
+
+  // Function to open the no-animal modal
+  function openNoAnimalModal(animalId) {
+    noAnimalModal.style.display = 'block';
+    document.getElementById('new_animal_id').value = animalId;
+  }
+
+  // Function to close the no-animal modal
+  function closeNoAnimalModal() {
+    noAnimalModal.style.display = 'none';
+  }
+
+  var animalExists = "{{ animal_exists }}";
+  if(animalExists === "False") {
+      openNoAnimalModal(document.getElementById('id_search_animal_id').value);
+  } else {
+      closeNoAnimalModal();
+  }
+  // Handle clicks on the "Create" button
+  createAnimalBtn.addEventListener('click', function() {
+    var newAnimalId = document.getElementById('new_animal_id').value;
+    var newBirthYear = document.getElementById('new_birth_year').value;
+    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Make a POST request to create the new animal
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '{% url "cow-create" %}', true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('X-CSRFToken', csrfToken);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        // Display a success message if needed
+        console.log('Animal created successfully');
+
+        // Close the modal
+        closeNoAnimalModal();
+
+        // Trigger a search with the newly created animal_id
+        document.getElementById('id_search_animal_id').value = newAnimalId;
+        document.getElementById('search-form').submit();
+      } else {
+        // Display an error message if something went wrong
+        console.error('Error creating animal:', xhr.responseText);
+      }
+    };
+    xhr.onerror = function() {
+      // Display an error message if the request fails
+      console.error('Error creating animal: Request failed');
+    };
+    var formData = new FormData();
+    formData.append('pregcheck_animal_id', newAnimalId);
+    formData.append('birth_year', newBirthYear);
+    xhr.send(formData);
   });
-  // Update summary stats
-  updateStats();
-</script>
 
+  // Handle clicks on the "Cancel" button
+  cancelCreateBtn.addEventListener('click', function() {
+    closeNoAnimalModal();
+  });
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // ...
-
-    var animalExists = "{{ animal_exists }}";
-    console.log('above animal exists cond check');
-
-    if (animalExists === "False") {
-      console.log('animal exists False');
-
-      modal.style.display = 'block';
-      document.getElementById('modal-message').textContent = 'Animal does not exist.';
-      document.getElementById('record-pregcheck').addEventListener('click', function() {
-        var animalIdInput = document.getElementById('id_pregcheck_animal_id');
-        animalIdInput.value = formData.get('pregcheck_animal_id');
-        animalIdInput.style.display = 'block';
-
-        var birthYearInput = document.createElement('input');
-        birthYearInput.type = 'text';
-        birthYearInput.name = 'birth_year';
-        birthYearInput.placeholder = 'Enter Birth Year';
-        form.appendChild(birthYearInput);
-
-        modal.style.display = 'none';
-      });
-
-      document.getElementById('cancel').addEventListener('click', function() {
-        var searchAnimalIdInput = document.getElementById('id_search_animal_id');
-        searchAnimalIdInput.value = '';
-        modal.style.display = 'none';
-      });
-    }
-
-    // ...
   });
 </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-});
-
-</script>
 

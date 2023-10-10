@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic import ListView, CreateView, FormView
 
 from .models import Cow, PregCheck
-from .forms import AnimalSearchForm, PregCheckForm
+from .forms import AnimalSearchForm, CowForm, PregCheckForm
 
 from pdb import set_trace as bp
 
@@ -99,7 +99,6 @@ class PregCheckRecordNewAnimalView(CreateView):
             return self.form_invalid(form)
 
 
-
 class PregCheckSummaryStatsView(View):
     def get(self, request, *args, **kwargs):
         # Calculate your summary stats here
@@ -120,4 +119,39 @@ class PregCheckSummaryStatsView(View):
 
         # Return the data as JSON response
         return JsonResponse(summary_stats)
+
+
+class CowCreateView(CreateView):
+    model = Cow
+    form_class = CowForm  # Replace with your actual form class
+# template_name = 'cow_create.html'  # Replace with your desired template
+
+# Override the success URL
+    def get_success_url(self):
+        return reverse('pregcheck-list')  # Redirect to the desired page after creating a Cow
+
+    # def form_valid(self, form):
+# # Process the form data and create a new Cow instance
+# # Here, you can also handle the optional birth_year field
+    #     animal_id = form.cleaned_data['animal_id']
+    #     birth_year = form.cleaned_data.get('birth_year')
+
+# # Create a new Cow instance
+    #     bp()
+    #     Cow.objects.create(animal_id=animal_id, birth_year=birth_year)
+
+    #     return super().form_valid(form)
+
+    # def post(self, request, *args, **kwargs):
+    #     """
+    #     Handle POST requests: instantiate a form instance with the passed
+    #     POST variables and then check if it's valid.
+    #     """
+    #     form = self.get_form()
+    #     bp()
+    #     if form.is_valid():
+    #         return self.form_valid(form)
+    #     else:
+    #         return self.form_invalid(form)
+
 

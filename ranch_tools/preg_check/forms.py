@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import PregCheck
+from .models import Cow, PregCheck
 
 from pdb import set_trace as bp
 
@@ -29,4 +29,23 @@ class PregCheckForm(forms.ModelForm):
             'breeding_season': forms.TextInput(attrs={'pattern': '\d{4}', 'title': 'Please enter a four-digit year'}),
             'comments': forms.Textarea,
         }
+
+
+class CowForm(forms.ModelForm):
+    class Meta:
+        model = Cow
+        fields = ['animal_id', 'birth_year']
+
+    animal_id = forms.CharField(
+        label='Animal ID',
+        max_length=255,
+        required=True,
+        widget=forms.TextInput(attrs={'readonly': 'readonly'})
+    )
+    birth_year = forms.CharField(
+        label='Birth Year (optional)',
+        max_length=4,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'YYYY'})
+    )
 
