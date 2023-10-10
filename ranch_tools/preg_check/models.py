@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Cow(models.Model):
-    animal_id = models.CharField(max_length=10, unique=True)
+    animal_id = models.CharField(max_length=10)
     birth_year = models.IntegerField(blank=True, null=True)
 
     def __repr__(self):
@@ -12,6 +12,9 @@ class Cow(models.Model):
 
     def __str__(self):
         return self.__repr__()
+
+    class Meta:
+        unique_together = [['animal_id', 'birth_year']]
 
 
 class PregCheck(models.Model):
