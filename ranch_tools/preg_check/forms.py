@@ -7,6 +7,7 @@ from pdb import set_trace as bp
 
 class AnimalSearchForm(forms.Form):
     search_animal_id = forms.CharField(label='Animal ID')
+    search_birth_year = forms.IntegerField(label='Birth Year', required=False)
 
 
 class PregCheckForm(forms.ModelForm):

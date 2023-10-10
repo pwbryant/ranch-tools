@@ -8,7 +8,7 @@ class Cow(models.Model):
     birth_year = models.IntegerField(blank=True, null=True)
 
     def __repr__(self):
-        return self.animal_id
+        return f'"{self.animal_id}-{self.birth_year}"'
 
     def __str__(self):
         return self.__repr__()

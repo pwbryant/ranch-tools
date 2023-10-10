@@ -14,7 +14,14 @@
     </form>
 
     <div class="result-container">
-      {% if pregchecks %}
+     {% if multiple_matches %}
+        <p>More than one animal is associated with this ID with birth years of
+        {% for birth_year in distinct_birth_years %}
+            {{ birth_year }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}.
+        <br>Please provide the birth year to select the desired animal.
+        </p>
+      {% elif pregchecks %}
       <table>
          <thead>
             <tr>

@@ -19,8 +19,12 @@ class PregCheckListView(ListView):
 
     def get_queryset(self):
         animal_id = self.request.GET.get('search_animal_id', None)
+        birth_year = self.request.GET.get('search_birth_year', None)
         if animal_id:
-            queryset = PregCheck.objects.filter(cow__animal_id=animal_id).order_by('-check_date', '-id')[:3]
+            queryset = PregCheck.objects.filter(cow__animal_id=animal_id)
+            if birth_year:
+                queryset = queryset.filter(cow__birth_year=birth_year)
+            queryset = queryset.order_by('-check_date', '-id')[:3]
         else:
             queryset = PregCheck.objects.none()
         return queryset
@@ -28,7 +32,13 @@ class PregCheckListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         animal_id = self.request.GET.get('search_animal_id', None)
-        search_form = AnimalSearchForm(initial={'search_animal_id': animal_id})
+        birth_year = self.request.GET.get('search_birth_year', None)
+        search_form = AnimalSearchForm(initial={'search_animal_id': animal_id, 'search_birth_year': birth_year})
+        animals = Cow.objects.filter(animal_id=animal_id)
+        if birth_year:
+            animals = animals.filter(birth_year=birth_year)
+        animal_count = animals.count()
+        distinct_birth_years = Cow.objects.filter(animal_id=animal_id).values_list('birth_year', flat=True).distinct()
         pregcheck_form = PregCheckForm()
         animal_exists = Cow.objects.filter(animal_id=animal_id).exists()
 
@@ -40,6 +50,8 @@ class PregCheckListView(ListView):
         context['search_form'] = search_form
         context['pregcheck_form'] = pregcheck_form
         context['animal_exists'] = animal_exists
+        context['multiple_matches'] = animal_count > 1
+        context['distinct_birth_years'] = distinct_birth_years
         return context
 
 
