@@ -1,4 +1,5 @@
 from datetime import datetime
+from urllib.parse import urlencode
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
@@ -40,9 +41,9 @@ class PregCheckListView(ListView):
         animal_count = animals.count()
         distinct_birth_years = Cow.objects.filter(animal_id=animal_id).values_list('birth_year', flat=True).distinct()
         pregcheck_form = PregCheckForm()
-        animal_exists = Cow.objects.filter(animal_id=animal_id).exists()
-
+        animal_exists = None
         if animal_id:
+            animal_exists = Cow.objects.filter(animal_id=animal_id).exists()
             pregcheck_form.fields['pregcheck_animal_id'].initial = animal_id
 
         pregcheck_form.fields['breeding_season'].initial = datetime.now().year
@@ -58,7 +59,6 @@ class PregCheckListView(ListView):
 class PregCheckRecordNewAnimalView(CreateView):
     model = PregCheck
     form_class = PregCheckForm
-    # template_name = 'pregcheck_list.html'
 
     def get(self, request, *args, **kwargs):
        # This view only handles POST requests, so for GET requests,
@@ -101,15 +101,12 @@ class PregCheckRecordNewAnimalView(CreateView):
 
 class PregCheckSummaryStatsView(View):
     def get(self, request, *args, **kwargs):
-        # Calculate your summary stats here
         total_pregnant = PregCheck.objects.filter(is_pregnant=True).count()
         total_open = PregCheck.objects.filter(is_pregnant=False).count()
         total_count = PregCheck.objects.count()
 
-        # Calculate pregnancy rate (percentage)
         pregnancy_rate = (total_pregnant / total_count) * 100 if total_count > 0 else 0
 
-        # Prepare the data as a dictionary
         summary_stats = {
             'total_pregnant': total_pregnant,
             'total_open': total_open,
@@ -117,41 +114,19 @@ class PregCheckSummaryStatsView(View):
             'pregnancy_rate': pregnancy_rate,
         }
 
-        # Return the data as JSON response
         return JsonResponse(summary_stats)
 
 
 class CowCreateView(CreateView):
     model = Cow
-    form_class = CowForm  # Replace with your actual form class
-# template_name = 'cow_create.html'  # Replace with your desired template
+    form_class = CowForm
 
-# Override the success URL
     def get_success_url(self):
-        return reverse('pregcheck-list')  # Redirect to the desired page after creating a Cow
-
-    # def form_valid(self, form):
-# # Process the form data and create a new Cow instance
-# # Here, you can also handle the optional birth_year field
-    #     animal_id = form.cleaned_data['animal_id']
-    #     birth_year = form.cleaned_data.get('birth_year')
-
-# # Create a new Cow instance
-    #     bp()
-    #     Cow.objects.create(animal_id=animal_id, birth_year=birth_year)
-
-    #     return super().form_valid(form)
-
-    # def post(self, request, *args, **kwargs):
-    #     """
-    #     Handle POST requests: instantiate a form instance with the passed
-    #     POST variables and then check if it's valid.
-    #     """
-    #     form = self.get_form()
-    #     bp()
-    #     if form.is_valid():
-    #         return self.form_valid(form)
-    #     else:
-    #         return self.form_invalid(form)
-
+        cow = self.object
+        query_parameters = {
+            'search_animal_id': cow.animal_id,
+            'search_birth_year': cow.birth_year
+        }
+        url = reverse('pregcheck-list') + '?' + urlencode(query_parameters)
+        return url
 
