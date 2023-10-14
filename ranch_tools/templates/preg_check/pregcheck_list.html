@@ -1,6 +1,14 @@
 {% load custom_filters %}
 {% load static %}
-<link rel="stylesheet"  type="text/css" href="{% static 'preg_check/styles.css' %}">
+<link rel="stylesheet"  type="text/css" href="{% static 'preg_check/css/styles.css' %}">
+
+<script type="text/javascript">
+	<!-- define vars to be used by external js files -->
+    const pregcheckSummaryStatsUrl = "{% url 'pregcheck-summary-stats' %}";
+    const animalExists = "{{ animal_exists }}";
+</script>
+
+<script type="text/javascript" src="{% static 'preg_check/js/script.js' %}"></script>
 
 <div class="container">
 	<div id="stats-content">
@@ -105,150 +113,4 @@
 	</form>
   </div>
 </div>
-
-
-
-<script>
-    // Function to calculate and display summary stats
-	function updateStats() {
-		// Make an AJAX request to fetch the summary stats
-		const statsContent = document.getElementById('stats-content');
-		fetch('{% url "pregcheck-summary-stats" %}')
-			.then(response => response.json())
-			.then(data => {
-				// Update the stats content with the fetched data
-				statsContent.innerHTML = `
-					<h2>Summary Stats</h2>
-					<p>Total Pregnant: ${data.total_pregnant}</p>
-					<p>Total Open: ${data.total_open}</p>
-					<p>Total Count: ${data.total_count}</p>
-					<p>Pregnancy Rate: ${data.pregnancy_rate.toFixed(2)}%</p>
-				`;
-			})
-			.catch(error => {
-				console.error('Error fetching summary stats:', error);
-				statsContent.innerHTML = 'Error fetching summary stats.';
-			});
-	}
-  document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('pregcheck-form');
-    var messageContainer = document.getElementById('message-container');
-    var modal = document.getElementById('message-modal');
-    var continueBtn = document.getElementById('continue-btn');
-    var resultContainer = document.querySelector('.result-container');
-
-    form.addEventListener('submit', function(event) {
-      event.preventDefault(); // Prevent normal form submission
-      var formData = new FormData(form);
-
-      var xhr = new XMLHttpRequest();
-      xhr.open(form.method, form.action, true);
-      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-            // Display success message
-            messageContainer.textContent = 'PregCheck created successfully';
-            messageContainer.classList.add('success');
-            modal.style.display = 'block';
-
-            // Reset the form inputs
-            form.reset();
-            document.getElementById('id_search_animal_id').value = '';
-            document.getElementById('id_search_birth_year').value = '';
-            // Remove animal_id input and label
-            var animalIdInput = document.getElementById('id_pregcheck_animal_id');
-            var animalIdLabel = document.querySelector('label[for="id_pregcheck_animal_id"]');
-            if (animalIdInput && animalIdLabel) {
-                animalIdInput.remove();
-                animalIdLabel.remove();
-            }
-
-            // Clear result container
-            var resultContainer = document.querySelector('.result-container');
-            if (resultContainer) {
-                resultContainer.innerHTML = '';
-            }
-
-            // Update summary stats
-            updateStats();
-
-            // Remove query parameters from URL
-            if (window.history && window.history.replaceState) {
-                var newUrl = window.location.href.split('?')[0];
-                window.history.replaceState({ path: newUrl }, '', newUrl);
-            }
-        } else {
-          // Display error message
-          messageContainer.textContent = 'Something went wrong';
-          messageContainer.classList.add('error');
-          modal.style.display = 'block';
-        }
-      };
-      xhr.onerror = function() {
-        // Display error message
-        messageContainer.textContent = 'Something went wrong';
-        messageContainer.classList.add('error');
-        modal.style.display = 'block';
-      };
-      xhr.send(formData);
-    });
-
-    continueBtn.addEventListener('click', function() {
-      modal.style.display = 'none';
-    });
-
-    var closeModal = function() {
-      modal.style.display = 'none';
-    };
-
-    var closeBtn = document.querySelector('.close');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeModal);
-    }
-
-    window.addEventListener('click', function(event) {
-      if (event.target === modal) {
-        closeModal();
-      }
-    });
-
-    // Initially hide the modal
-    modal.style.display = 'none';
-
-    // Update summary stats
-    updateStats();
-
-
-  // New animal creation ---------------------------------------
-  var noAnimalModal = document.getElementById('no-animal-modal');
-  var createAnimalForm = document.getElementById('create-animal-form');
-  var createAnimalBtn = document.getElementById('create-animal-btn');
-  var cancelCreateBtn = document.getElementById('cancel-create-btn');
-
-  // Function to open the no-animal modal
-  function openNoAnimalModal(animalId) {
-    noAnimalModal.style.display = 'block';
-    document.getElementById('new_animal_id').value = animalId;
-  }
-
-  // Function to close the no-animal modal
-  function closeNoAnimalModal() {
-    noAnimalModal.style.display = 'none';
-  }
-
-  var animalExists = "{{ animal_exists }}";
-  if(animalExists === "False") {
-      openNoAnimalModal(document.getElementById('id_search_animal_id').value);
-  } else {
-      closeNoAnimalModal();
-  }
-
-  // Handle clicks on the "Cancel" button
-  cancelCreateBtn.addEventListener('click', function() {
-    closeNoAnimalModal();
-  });
-
-  });
-</script>
-
 
