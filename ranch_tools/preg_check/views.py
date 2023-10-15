@@ -25,7 +25,7 @@ class PregCheckListView(ListView):
             queryset = PregCheck.objects.filter(cow__animal_id=animal_id)
             if birth_year:
                 queryset = queryset.filter(cow__birth_year=birth_year)
-            queryset = queryset.order_by('-check_date', '-id')[:3]
+            queryset = queryset.order_by('-check_date', '-id')
         else:
             queryset = PregCheck.objects.none()
         return queryset
