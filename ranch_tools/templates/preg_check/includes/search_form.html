@@ -1,8 +1,9 @@
 {% load static %}
 <div class="form-container">
-  <form id="search-form" method="get" action="">
-    {{ search_form.as_p }}
-    <button type="submit">Search For Animal</button>
-  </form>
+    <form id="search-form" method="get" action="">
+        {{ search_form.as_p }}
+        <button type="submit">Search For Animal</button>
+    </form>
+    {% include 'preg_check/includes/results_container.html' %}
 </div>
 
