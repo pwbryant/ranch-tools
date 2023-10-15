@@ -64,29 +64,7 @@
         </div>
     </div>
 
-    <div class="form-container">
-        <form id="pregcheck-form" method="post" action="{% url 'pregcheck-create' %}">
-            {% csrf_token %}
-            <label for="{{ pregcheck_form.pregcheck_animal_id.id_for_label }}">Animal ID</label>
-            {{ pregcheck_form.pregcheck_animal_id }}
-            <label for="{{ pregcheck_form.breeding_season.id_for_label }}">Breeding Season</label>
-            {{ pregcheck_form.breeding_season }}
-            <label for="{{ pregcheck_form.comments.id_for_label }}">Comments</label>
-            {{ pregcheck_form.comments }}
-            <label for="{{ pregcheck_form.is_pregnant.id_for_label }}">Status</label>
-            {{ pregcheck_form.is_pregnant }}
-            <div class="form-group">
-                <label for="{{ pregcheck_form.recheck.id_for_label }}">Recheck</label>
-                <div class="checkbox-input">
-                    {{ pregcheck_form.recheck }}
-                </div>
-            </div>
-            <button id="submit-btn" type="submit" {% if pregcheck_form.fields.is_pregnant.widget.attrs.disabled %}disabled{% endif %}>
-                Submit Preg Check
-            </button>
-        </form>
-    </div>
-
+    {% include 'preg_check/includes/pregcheck_form.html' %}
     {% include 'preg_check/includes/message_modal.html' %}
     {% include 'preg_check/includes/no_animal_modal.html' %}
 </div>
