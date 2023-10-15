@@ -19,49 +19,8 @@
             <button type="submit">Search For Animal</button>
         </form>
 
-        <div class="result-container">
-            {% if multiple_matches %}
-                <p>More than one animal is associated with this ID with birth years of
-                    {% for birth_year in distinct_birth_years %}
-                        {{ birth_year }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}.
-                    <br>Please provide the birth year to select the desired animal.
-                </p>
-            {% elif pregchecks %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Preg Status</th>
-                            <th>Check Date</th>
-                            <th>Breeding Season</th>
-                            {% if pregchecks|has_comments %}
-                                <th>Comments</th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for pregcheck in pregchecks %}
-                            <tr>
-                                {% if pregcheck.is_pregnant %}
-                                    <td>Pregnant</td>
-                                {% else %}
-                                    <td>Open</td>
-                                {% endif %}
-                                <td>{{ pregcheck.check_date }}</td>
-                                <td>{{ pregcheck.breeding_season }}</td>
-                                {% if pregcheck.comments %}
-                                    <td>{{ pregcheck.comments }}</td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                {% if search_form.is_bound %}
-                    <p>Animal ID not found</p>
-                {% endif %}
-            {% endif %}
-        </div>
+        {% include 'preg_check/includes/results_container.html' %}
+
     </div>
 
     {% include 'preg_check/includes/pregcheck_form.html' %}
