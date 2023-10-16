@@ -35,16 +35,18 @@ class PregCheckListView(ListView):
         animal_id = self.request.GET.get('search_animal_id', None)
         birth_year = self.request.GET.get('search_birth_year', None)
         search_form = AnimalSearchForm(initial={'search_animal_id': animal_id, 'search_birth_year': birth_year})
+        pregcheck_form = PregCheckForm()
         animals = Cow.objects.filter(animal_id=animal_id)
         if birth_year:
             animals = animals.filter(birth_year=birth_year)
-        animal_count = animals.count()
+            pregcheck_form.fields['birth_year'].initial = birth_year
         distinct_birth_years = Cow.objects.filter(animal_id=animal_id).values_list('birth_year', flat=True).distinct()
-        pregcheck_form = PregCheckForm()
         animal_exists = None
         if animal_id:
             animal_exists = Cow.objects.filter(animal_id=animal_id).exists()
             pregcheck_form.fields['pregcheck_animal_id'].initial = animal_id
+
+        animal_count = animals.count()
 
         pregcheck_form.fields['breeding_season'].initial = datetime.now().year
 
@@ -76,10 +78,12 @@ class PregCheckRecordNewAnimalView(CreateView):
     def form_valid(self, form):
         animal_id = form.cleaned_data['pregcheck_animal_id']
         birth_year = form.cleaned_data['birth_year']
-
-        if animal_id:
-            birth_year = None if not birth_year else birth_year
-            cow, created = Cow.objects.get_or_create(animal_id=animal_id, defaults={'birth_year': birth_year})
+        birth_year = None if not birth_year else birth_year
+        if animal_id and birth_year:
+            cow, created = Cow.objects.get_or_create(animal_id=animal_id, birth_year=birth_year)
+            form.instance.cow = cow
+        elif animal_id:
+            cow, created = Cow.objects.get_or_create(animal_id=animal_id)
             form.instance.cow = cow
 
         return super().form_valid(form)

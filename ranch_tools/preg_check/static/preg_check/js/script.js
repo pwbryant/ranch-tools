@@ -121,8 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		return { openNoAnimalModal, closeNoAnimalModal };
 	}
-
     const { closeNoAnimalModal } = handleCreateAnimal();
+
 
 	// Event Listeners
     document.querySelector('#no-animal-modal .close').addEventListener('click', closeNoAnimalModal);
@@ -130,11 +130,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('pregcheck-form').addEventListener('submit', handleFormSubmit);
 	document.getElementById('continue-btn').addEventListener('click', handleContinueBtnClick);
 	document.querySelector('.close').addEventListener('click', handleModalCloseBtnClick);
+
 	window.addEventListener('click', handleWindowClick);
 
 
 	// Initial Actions
 	updateStats();
 	handleCreateAnimal();
+    // toggleSearchBirthYear()
 });
 

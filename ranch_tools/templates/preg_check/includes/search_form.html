@@ -1,7 +1,17 @@
 {% load static %}
 <div class="form-container">
     <form id="search-form" method="get" action="">
-        {{ search_form.as_p }}
+        <div class="form-group">
+            {{ search_form.search_animal_id.label_tag }}
+            {{ search_form.search_animal_id }}
+        </div>
+        <!-- Render the search_birth_year field only if multiple_matches is True -->
+        {% if multiple_matches %}
+            <div class="form-group">
+                {{ search_form.search_birth_year.label_tag }}
+                {{ search_form.search_birth_year }}
+            </div>
+        {% endif %}
         <button type="submit">Search For Animal</button>
     </form>
     {% include 'preg_check/includes/results_container.html' %}
