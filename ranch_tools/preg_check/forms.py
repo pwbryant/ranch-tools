@@ -12,7 +12,7 @@ class AnimalSearchForm(forms.Form):
 
 class PregCheckForm(forms.ModelForm):
     pregcheck_animal_id = forms.CharField(label='Animal ID', required=False)
-    birth_year = forms.CharField(label='Birth Year', required=False)
+    birth_year = forms.CharField(required=False, widget=forms.HiddenInput())
     is_pregnant = forms.ChoiceField(
         label='Status',
         choices=((True, 'Pregnant'), (False, 'Open')),

@@ -4,8 +4,8 @@
         {% csrf_token %}
         <label for="{{ pregcheck_form.pregcheck_animal_id.id_for_label }}">Animal ID</label>
         {{ pregcheck_form.pregcheck_animal_id }}
+        {{ pregcheck_form.birth_year }}
         {% if pregcheck_form.birth_year %}
-            <label for="{{ pregcheck_form.birth_year.id_for_label }}">Birth Year</label>
             {{ pregcheck_form.birth_year }}
         {% endif %}
         <label for="{{ pregcheck_form.breeding_season.id_for_label }}">Breeding Season</label>
