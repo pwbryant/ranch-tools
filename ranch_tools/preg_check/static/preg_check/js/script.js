@@ -202,8 +202,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 // Handle success (e.g., close modal, update UI)
-                console.log('success');
                 closePregCheckEditModal();
+                location.reload();
             } else if (data.errors) {
                 // Handle form errors (e.g., display error messages)
                 console.error('Form errors:', data.errors);
