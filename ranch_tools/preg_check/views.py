@@ -1,14 +1,14 @@
 from datetime import datetime
 from urllib.parse import urlencode
 
-from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, CreateView, FormView
 
+from .forms import AnimalSearchForm, CowForm, EditPregCheckForm, PregCheckForm
 from .models import Cow, PregCheck
-from .forms import AnimalSearchForm, CowForm, PregCheckForm
 
 from pdb import set_trace as bp
 
@@ -133,4 +133,37 @@ class CowCreateView(CreateView):
         }
         url = reverse('pregcheck-list') + '?' + urlencode(query_parameters)
         return url
+
+
+
+class PregCheckEditView(View):
+    def post(self, request, pregcheck_id):
+        try:
+            pregcheck = PregCheck.objects.get(pk=pregcheck_id)
+        except PregCheck.DoesNotExist:
+            return JsonResponse({'error': 'PregCheck not found'}, status=404)
+
+        form = EditPregCheckForm(request.POST, instance=pregcheck)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': 'PregCheck updated successfully'})
+        else:
+            errors = form.errors.as_json()
+            return JsonResponse({'errors': errors}, status=400)
+
+
+class PregCheckDetailView(View):
+
+    def get(self, request, pregcheck_id):
+        # Retrieve the PregCheck object or return a 404 response if not found
+        pregcheck = get_object_or_404(PregCheck, pk=pregcheck_id)
+        
+        pregcheck_details = {
+            'id': pregcheck.id,
+            'is_pregnant': pregcheck.is_pregnant,
+            'comments': pregcheck.comments,
+            'recheck': pregcheck.recheck,
+        }
+
+        return JsonResponse(pregcheck_details)
 

@@ -49,3 +49,9 @@ class CowForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'placeholder': 'YYYY'})
     )
 
+
+class EditPregCheckForm(forms.ModelForm):
+    class Meta:
+        model = PregCheck
+        fields = ['is_pregnant', 'comments', 'recheck']
+

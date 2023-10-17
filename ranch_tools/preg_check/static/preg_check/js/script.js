@@ -1,5 +1,22 @@
 document.addEventListener('DOMContentLoaded', function() {
 	// Function definitions
+
+	function getCookie(name) {
+		let cookieValue = null;
+		if (document.cookie && document.cookie !== '') {
+			const cookies = document.cookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) === (name + '=')) {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+		return cookieValue;
+	}
+
 	function updateStats() {
 		// Make an AJAX request to fetch the summary stats
 		const statsContent = document.getElementById('stats-content');
@@ -90,6 +107,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		modal.style.display = 'none';
 	}
 
+	function closePregCheckEditModal() {
+		var modal = document.getElementById('edit-modal');
+		modal.style.display = 'none';
+	}
+
 	function handleModalCloseBtnClick() {
 		closeModal();
 	}
@@ -123,13 +145,78 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
     const { closeNoAnimalModal } = handleCreateAnimal();
 
+	// Function to populate the edit modal with data
+    function populateEditModal(pregcheckData) {
+        // Populate form fields in the edit modal with data from pregcheckData
+        document.getElementById('edit-pregcheck-id').value = pregcheckData.id;
+        document.getElementById('edit-is_pregnant').value = pregcheckData.is_pregnant.toString();
+        document.getElementById('edit-comments').value = pregcheckData.comments;
+        document.getElementById('edit-recheck').value = pregcheckData.recheck;
+        
+        // Show the edit modal
+        const editModal = document.getElementById('edit-modal');
+        editModal.style.display = 'block';
+    }
 
 	// Event Listeners
+    document.querySelector('#edit-modal .close').addEventListener('click', closePregCheckEditModal);
     document.querySelector('#no-animal-modal .close').addEventListener('click', closeNoAnimalModal);
     document.getElementById('cancel-create-btn').addEventListener('click', closeNoAnimalModal);
 	document.getElementById('pregcheck-form').addEventListener('submit', handleFormSubmit);
 	document.getElementById('continue-btn').addEventListener('click', handleContinueBtnClick);
 	document.querySelector('.close').addEventListener('click', handleModalCloseBtnClick);
+
+    // Event listener for "edit" buttons
+    document.querySelectorAll('.edit-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const pregcheckId = button.getAttribute('data-pregcheck-id');
+            
+            // Make an AJAX request to fetch data for the selected pregcheck
+            fetch(`/pregchecks/${pregcheckId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('data', data);
+                    populateEditModal(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching pregcheck data:', error);
+                });
+        });
+    });
+
+	// Event listener for "Save" button in the edit modal
+    document.getElementById('edit-pregcheck-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent normal form submission
+        
+        const formData = new FormData(this);
+        const pregcheckId = document.getElementById('edit-pregcheck-id').value;
+        
+        fetch(`/pregchecks/${pregcheckId}/edit/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Handle success (e.g., close modal, update UI)
+                console.log('success');
+                closePregCheckEditModal();
+            } else if (data.errors) {
+                // Handle form errors (e.g., display error messages)
+                console.error('Form errors:', data.errors);
+            } else {
+                // Handle other errors or unexpected responses
+                console.error('Unexpected response:', data);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
 
 	window.addEventListener('click', handleWindowClick);
 
