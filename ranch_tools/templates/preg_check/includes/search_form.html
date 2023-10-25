@@ -6,12 +6,10 @@
             {{ search_form.search_animal_id }}
         </div>
         <!-- Render the search_birth_year field only if multiple_matches is True -->
-        {% if multiple_matches or search_form.search_birth_year.value %}
-            <div class="form-group">
-                {{ search_form.search_birth_year.label_tag }}
-                {{ search_form.search_birth_year }}
-            </div>
-        {% endif %}
+        <div class="form-group">
+            {{ search_form.search_birth_year.label_tag }}
+            {{ search_form.search_birth_year }}
+        </div>
         <button type="submit">Search For Animal</button>
     </form>
     {% include 'preg_check/includes/results_container.html' %}

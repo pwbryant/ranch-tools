@@ -6,8 +6,16 @@ from pdb import set_trace as bp
 
 
 class AnimalSearchForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        birth_year_choices = kwargs.pop('birth_year_choices', [])
+        super().__init__(*args, **kwargs)
+        self.fields['search_birth_year'] = forms.ChoiceField(
+            choices=birth_year_choices,
+            widget=forms.RadioSelect,
+            required=False
+        )
     search_animal_id = forms.CharField(label='Animal ID')
-    search_birth_year = forms.IntegerField(label='Birth Year', required=False)
 
 
 class PregCheckForm(forms.ModelForm):

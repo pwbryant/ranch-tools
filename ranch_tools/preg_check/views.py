@@ -34,19 +34,25 @@ class PregCheckListView(ListView):
         context = super().get_context_data(**kwargs)
         animal_id = self.request.GET.get('search_animal_id', None)
         birth_year = self.request.GET.get('search_birth_year', None)
-        search_form = AnimalSearchForm(initial={'search_animal_id': animal_id, 'search_birth_year': birth_year})
         pregcheck_form = PregCheckForm()
         animals = Cow.objects.filter(animal_id=animal_id)
         if birth_year:
             animals = animals.filter(birth_year=birth_year)
             pregcheck_form.fields['birth_year'].initial = birth_year
-        distinct_birth_years = Cow.objects.filter(animal_id=animal_id).values_list('birth_year', flat=True).distinct()
         animal_exists = None
         if animal_id:
             animal_exists = Cow.objects.filter(animal_id=animal_id).exists()
             pregcheck_form.fields['pregcheck_animal_id'].initial = animal_id
 
+        distinct_birth_years = Cow.objects.filter(animal_id=animal_id).values_list('birth_year', flat=True).distinct()
         animal_count = animals.count()
+        if animal_count == 1:
+            birth_year = distinct_birth_years[0]
+
+        search_form = AnimalSearchForm(
+            initial={'search_animal_id': animal_id, 'search_birth_year': birth_year},
+            birth_year_choices=[(y, str(y),) for y in distinct_birth_years]
+        )
 
         pregcheck_form.fields['breeding_season'].initial = datetime.now().year
 
