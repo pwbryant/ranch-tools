@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function for handling Edit Cow Modal
     function handleEditCowModal() {
-        console.log('handle edit cow modal');
         var modal = document.getElementById("editCowModal");
 
         // Show modal
@@ -202,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch(`/pregchecks/${pregcheckId}/`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('data', data);
                     populateEditModal(data);
                 })
                 .catch(error => {

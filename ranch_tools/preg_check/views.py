@@ -45,12 +45,13 @@ class PregCheckListView(ListView):
             animal_exists = Cow.objects.filter(animal_id=animal_id).exists()
             pregcheck_form.fields['pregcheck_animal_id'].initial = animal_id
 
-        distinct_birth_years = Cow.objects.filter(animal_id=animal_id).values_list('birth_year', flat=True).distinct()
         animal_count = animals.count()
         cow = None
         if animal_count == 1:
-            birth_year = distinct_birth_years[0]
             cow = animals[0]
+            distinct_birth_years = [cow.birth_year]
+        else:
+            distinct_birth_years = animals.values_list('birth_year', flat=True).distinct()
 
         search_form = AnimalSearchForm(
             initial={'search_animal_id': animal_id, 'search_birth_year': birth_year},
