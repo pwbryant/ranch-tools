@@ -11,7 +11,11 @@
             {{ search_form.search_birth_year }}
         </div>
         <button type="submit">Search For Animal</button>
-    </form>
-    {% include 'preg_check/includes/results_container.html' %}
+        {% if not multiple_matches %}
+            <button id="edit-cow-btn">Edit Cow</button>
+        {% endif %}
+     </form>
+   {% include 'preg_check/includes/results_container.html' %}
+
 </div>
 

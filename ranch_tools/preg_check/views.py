@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, CreateView, FormView
+from django.views.generic.edit import UpdateView
 
 from .forms import AnimalSearchForm, CowForm, EditPregCheckForm, PregCheckForm
 from .models import Cow, PregCheck
@@ -46,8 +47,10 @@ class PregCheckListView(ListView):
 
         distinct_birth_years = Cow.objects.filter(animal_id=animal_id).values_list('birth_year', flat=True).distinct()
         animal_count = animals.count()
+        cow = None
         if animal_count == 1:
             birth_year = distinct_birth_years[0]
+            cow = animals[0]
 
         search_form = AnimalSearchForm(
             initial={'search_animal_id': animal_id, 'search_birth_year': birth_year},
@@ -61,6 +64,7 @@ class PregCheckListView(ListView):
         context['animal_exists'] = animal_exists
         context['multiple_matches'] = animal_count > 1
         context['distinct_birth_years'] = distinct_birth_years
+        context['cow'] = cow
         return context
 
 
@@ -140,6 +144,29 @@ class CowCreateView(CreateView):
         url = reverse('pregcheck-list') + '?' + urlencode(query_parameters)
         return url
 
+
+class CowUpdateView(UpdateView):
+    model = Cow
+    fields = ['birth_year']
+    template_name = 'path_to_template.html'  # Replace with the path to your template for updating the cow
+    
+    def form_valid(self, form):
+        # Save the updated cow instance
+        self.object = form.save()
+
+        # Construct the URL for redirection
+        redirect_url = reverse('pregcheck-list')
+        query_parameters = {
+            'search_animal_id': self.object.animal_id,
+            'search_birth_year': form.cleaned_data['birth_year']
+        }
+        full_redirect_url = redirect_url + '?' + urlencode(query_parameters)
+        
+        return redirect(full_redirect_url)
+    
+    def get_success_url(self):
+        # This method might not be called due to our custom redirection in form_valid method, but just in case:
+        return reverse('pregcheck-list')
 
 
 class PregCheckEditView(View):

@@ -1,6 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
 	// Function definitions
 
+    // Function for handling Edit Cow Modal
+    function handleEditCowModal() {
+        console.log('handle edit cow modal');
+        var modal = document.getElementById("editCowModal");
+
+        // Show modal
+        document.getElementById("edit-cow-btn").onclick = function() {
+            modal.style.display = "block";
+        }
+
+        // Hide modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+
+    // Event listeners for Edit Cow Modal
 	function getCookie(name) {
 		let cookieValue = null;
 		if (document.cookie && document.cookie !== '') {
@@ -166,6 +185,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('continue-btn').addEventListener('click', handleContinueBtnClick);
 	document.querySelector('.close').addEventListener('click', handleModalCloseBtnClick);
 
+	// Event Listener for close edit modal
+    const closeModalBtn = document.querySelector('#editCowModal .close-button');
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function() {
+            const modal = document.getElementById('editCowModal');
+            modal.style.display = 'none';
+        });
+    }
     // Event listener for "edit" buttons
     document.querySelectorAll('.edit-button').forEach(button => {
         button.addEventListener('click', () => {
@@ -224,6 +251,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	// Initial Actions
 	updateStats();
 	handleCreateAnimal();
-    // toggleSearchBirthYear()
+    handleEditCowModal();
 });
 

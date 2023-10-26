@@ -1,0 +1,23 @@
+{% load static %}
+{% if cow %}
+<div id="editCowModal" class="cow-edit-modal">
+    <div class="cow-edit-modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Edit Cow</h2>
+        <form method="post" action="{% url 'cow-update' pk=cow.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="animal_id">Animal ID:</label>
+                <input type="text" id="animal_id" name="animal_id" readonly value="{{ cow.animal_id }}">
+            </div>
+            <div class="form-group">
+                <label for="birth_year">Birth Year:</label>
+                <input type="number" id="birth_year" name="birth_year" required>
+            </div>
+            <button type="submit">Update</button>
+            <button type="button">Cancel</button>
+        </form>
+    </div>
+</div>
+
+{% endif %}
