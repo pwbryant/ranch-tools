@@ -72,33 +72,10 @@ document.addEventListener('DOMContentLoaded', function() {
 				messageContainer.textContent = 'PregCheck created successfully';
 				messageContainer.classList.add('success');
 				modal.style.display = 'block';
-
-				// Reset the form inputs
-				form.reset();
-				document.getElementById('id_search_animal_id').value = '';
-				document.getElementById('id_search_birth_year').value = '';
-				// Remove animal_id input and label
-				var animalIdInput = document.getElementById('id_pregcheck_animal_id');
-				var animalIdLabel = document.querySelector('label[for="id_pregcheck_animal_id"]');
-				if (animalIdInput && animalIdLabel) {
-					animalIdInput.remove();
-					animalIdLabel.remove();
-				}
-
-				// Clear result container
-				var resultContainer = document.querySelector('.result-container');
-				if (resultContainer) {
-					resultContainer.innerHTML = '';
-				}
-
-				// Update summary stats
-				updateStats();
-
-				// Remove query parameters from URL
-				if (window.history && window.history.replaceState) {
-					var newUrl = window.location.href.split('?')[0];
-					window.history.replaceState({ path: newUrl }, '', newUrl);
-				}
+                setTimeout(function() {
+                    modal.style.display = 'none';
+                    location.href = pregchecksUrl;
+                }, 2000);
 			} else {
 				// Display error message
 				messageContainer.textContent = 'Something went wrong';

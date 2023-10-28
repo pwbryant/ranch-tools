@@ -17,7 +17,7 @@
     <!-- define vars to be used by external js files -->
     const pregcheckSummaryStatsUrl = "{% url 'pregcheck-summary-stats' %}";
     const animalExists = "{{ animal_exists }}" === "True";
-    <!-- const multipleAnimalIdMatches = "{{ multiple_matches }}" === "True"; -->
+    const pregchecksUrl = "{% url 'pregcheck-list' %}";
 </script>
 
 <script type="text/javascript" src="{% static 'preg_check/js/script.js' %}"></script>
