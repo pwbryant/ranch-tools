@@ -1,3 +1,16 @@
+.breeding-season-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0; /* Provide some padding for breathing space */
+    border-bottom: 1px solid #ccc; /* Add a separator line if you want */
+}
+
+#breeding-season-input {
+    width: 60px; /* Keeping the width restricted to 4 chars */
+    margin-left: 10px;
+}
+
 .cow-edit-modal {
     display: none;
     position: fixed;
@@ -31,13 +44,19 @@
     cursor: pointer;
 }
 
-
-
 .container {
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
     height: 100vh;
+    /* margin-top: 50px; */
+}
+
+.content-row {
+    display: flex;
+    width: 100%; /* or you can set it to a fixed value if you want */
+    justify-content: center; /* or 'center' depending on your preference */
+    padding: 20px; /* Add some padding for spacing */
 }
 
 .form-container {
