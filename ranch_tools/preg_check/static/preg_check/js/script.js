@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 		xhr.onload = function() {
 			if (xhr.status === 200) {
+                updateStats();
 				// Display success message
 				messageContainer.textContent = 'PregCheck created successfully';
 				messageContainer.classList.add('success');
@@ -158,7 +159,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#no-animal-modal .close').addEventListener('click', closeNoAnimalModal);
     document.getElementById('cancel-create-btn').addEventListener('click', closeNoAnimalModal);
 	document.getElementById('pregcheck-form').addEventListener('submit', handleFormSubmit);
-	document.getElementById('continue-btn').addEventListener('click', handleContinueBtnClick);
 	document.querySelector('.close').addEventListener('click', handleModalCloseBtnClick);
 
 	// Event Listener for close edit modal
