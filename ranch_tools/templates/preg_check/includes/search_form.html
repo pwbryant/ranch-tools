@@ -11,7 +11,7 @@
             {{ search_form.search_birth_year }}
         </div>
         <button type="submit">Search For Animal</button>
-        {% if not multiple_matches %}
+        {% if animal_exists and not multiple_matches %}
             <button id="edit-cow-btn" type="button">Edit Cow</button>
         {% endif %}
      </form>

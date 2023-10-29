@@ -50,6 +50,7 @@ class PregCheckListView(ListView):
         if animal_count == 1:
             cow = animals[0]
             distinct_birth_years = [cow.birth_year]
+            birth_year = cow.birth_year
         else:
             distinct_birth_years = animals.values_list('birth_year', flat=True).distinct()
 

@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 	// Function definitions
 
-
     // Function for handling Edit Cow Modal
     function handleEditCowModal() {
         var modal = document.getElementById("editCowModal");
@@ -73,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!breedingSeasonInput.value) {
             // Set the input value to the latest breeding season provided by Django's context
             breedingSeasonInput.value = latestBreedingSeason;
+            document.getElementById('breeding_season').value = latestBreedingSeason;
             updateStats();
         }
     }
