@@ -1,13 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
 	// Function definitions
 
+
     // Function for handling Edit Cow Modal
     function handleEditCowModal() {
         var modal = document.getElementById("editCowModal");
+        var editButton = document.getElementById("edit-cow-btn");
 
-        // Show modal
-        document.getElementById("edit-cow-btn").onclick = function() {
-            modal.style.display = "block";
+        if (editButton) {
+            // Show modal
+            document.getElementById("edit-cow-btn").onclick = function() {
+                modal.style.display = "block";
+            }
         }
 
         // Hide modal
@@ -39,11 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Make an AJAX request to fetch the summary stats
         const statsContent = document.getElementById('stats-content');
         const breedingSeason = document.getElementById('breeding-season-input').value;
-        console.log('breedingSeason');
 
         // Check if breedingSeason is numeric and has a length of 4
         if (breedingSeason.length === 4 && !isNaN(breedingSeason)) {
-            console.log('fetch');
             fetch(pregcheckSummaryStatsUrl + '?stats_breeding_season=' + breedingSeason)
                 .then(response => response.json())
                 .then(data => {
@@ -62,6 +64,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         } else {
             statsContent.innerHTML = 'Please provide a valid 4-digit breeding season.';
+        }
+    }
+
+    function populateEmptyBreedingSeasonInput() {
+        var breedingSeasonInput = document.getElementById('breeding-season-input');
+        // Check if the input is empty
+        if (!breedingSeasonInput.value) {
+            // Set the input value to the latest breeding season provided by Django's context
+            breedingSeasonInput.value = latestBreedingSeason;
+            updateStats();
         }
     }
 
@@ -171,10 +183,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.querySelector('.close').addEventListener('click', handleModalCloseBtnClick);
 
     // Listen to Breeding Season input and update stats
-    document.querySelector('#breeding-season-input').addEventListener('change', function() {
+    document.querySelector('#breeding-season-input').addEventListener('input', function() {
         var breedingSeason = this.value;
         if(breedingSeason && breedingSeason.length === 4) {
             updateStats();
+            document.getElementById('breeding_season').value = breedingSeason;
         }
     });
 
@@ -244,5 +257,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	updateStats();
 	handleCreateAnimal();
     handleEditCowModal();
+    populateEmptyBreedingSeasonInput();
 });
 

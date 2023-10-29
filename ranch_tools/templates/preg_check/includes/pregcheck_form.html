@@ -8,8 +8,9 @@
         {% if pregcheck_form.birth_year %}
             {{ pregcheck_form.birth_year }}
         {% endif %}
-        <label for="{{ pregcheck_form.breeding_season.id_for_label }}">Breeding Season</label>
-        {{ pregcheck_form.breeding_season }}
+        <label for="breeding_season">Breeding Season</label>
+        <input type="text" id="breeding_season" name="breeding_season" readonly>
+
         <label for="{{ pregcheck_form.comments.id_for_label }}">Comments</label>
         {{ pregcheck_form.comments }}
         <label for="{{ pregcheck_form.is_pregnant.id_for_label }}">Status</label>

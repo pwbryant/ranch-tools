@@ -60,6 +60,7 @@ class PregCheckListView(ListView):
 
         pregcheck_form.fields['breeding_season'].initial = datetime.now().year
 
+        context['latest_breeding_season'] = PregCheck.objects.latest('id').breeding_season
         context['search_form'] = search_form
         context['pregcheck_form'] = pregcheck_form
         context['animal_exists'] = animal_exists
