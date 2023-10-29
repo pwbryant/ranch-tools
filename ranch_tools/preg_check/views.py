@@ -1,7 +1,7 @@
 from datetime import datetime
 from urllib.parse import urlencode
 
-from django.http import JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import View
@@ -116,9 +116,14 @@ class PregCheckRecordNewAnimalView(CreateView):
 
 class PregCheckSummaryStatsView(View):
     def get(self, request, *args, **kwargs):
-        total_pregnant = PregCheck.objects.filter(is_pregnant=True).count()
-        total_open = PregCheck.objects.filter(is_pregnant=False).count()
-        total_count = PregCheck.objects.count()
+        stats_breeding_season = request.GET.get('stats_breeding_season')
+
+        if not stats_breeding_season:
+            return HttpResponseBadRequest("stats_breeding_season parameter is required.")
+
+        total_pregnant = PregCheck.objects.filter(is_pregnant=True, breeding_season=stats_breeding_season).count()
+        total_open = PregCheck.objects.filter(is_pregnant=False, breeding_season=stats_breeding_season).count()
+        total_count = PregCheck.objects.filter(breeding_season=stats_breeding_season).count()
 
         pregnancy_rate = (total_pregnant / total_count) * 100 if total_count > 0 else 0
 

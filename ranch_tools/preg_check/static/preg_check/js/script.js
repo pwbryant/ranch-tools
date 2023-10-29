@@ -36,25 +36,34 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	function updateStats() {
-		// Make an AJAX request to fetch the summary stats
-		const statsContent = document.getElementById('stats-content');
-		fetch(pregcheckSummaryStatsUrl)
-			.then(response => response.json())
-			.then(data => {
-				// Update the stats content with the fetched data
-				statsContent.innerHTML = `
-					<h2>Summary Stats</h2>
-					<p>Total Pregnant: ${data.total_pregnant}</p>
-					<p>Total Open: ${data.total_open}</p>
-					<p>Total Count: ${data.total_count}</p>
-					<p>Pregnancy Rate: ${data.pregnancy_rate.toFixed(2)}%</p>
-				`;
-			})
-			.catch(error => {
-				console.error('Error fetching summary stats:', error);
-				statsContent.innerHTML = 'Error fetching summary stats.';
-			});
-	}
+        // Make an AJAX request to fetch the summary stats
+        const statsContent = document.getElementById('stats-content');
+        const breedingSeason = document.getElementById('breeding-season-input').value;
+        console.log('breedingSeason');
+
+        // Check if breedingSeason is numeric and has a length of 4
+        if (breedingSeason.length === 4 && !isNaN(breedingSeason)) {
+            console.log('fetch');
+            fetch(pregcheckSummaryStatsUrl + '?stats_breeding_season=' + breedingSeason)
+                .then(response => response.json())
+                .then(data => {
+                    // Update the stats content with the fetched data
+                    statsContent.innerHTML = `
+                        <h2>Summary Stats</h2>
+                        <p>Total Pregnant: ${data.total_pregnant}</p>
+                        <p>Total Open: ${data.total_open}</p>
+                        <p>Total Count: ${data.total_count}</p>
+                        <p>Pregnancy Rate: ${data.pregnancy_rate.toFixed(2)}%</p>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error fetching summary stats:', error);
+                    statsContent.innerHTML = 'Error fetching summary stats.';
+                });
+        } else {
+            statsContent.innerHTML = 'Please provide a valid 4-digit breeding season.';
+        }
+    }
 
 	function handleFormSubmit(event) {
 		event.preventDefault(); // Prevent normal form submission
@@ -160,6 +169,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cancel-create-btn').addEventListener('click', closeNoAnimalModal);
 	document.getElementById('pregcheck-form').addEventListener('submit', handleFormSubmit);
 	document.querySelector('.close').addEventListener('click', handleModalCloseBtnClick);
+
+    // Listen to Breeding Season input and update stats
+    document.querySelector('#breeding-season-input').addEventListener('change', function() {
+        var breedingSeason = this.value;
+        if(breedingSeason && breedingSeason.length === 4) {
+            updateStats();
+        }
+    });
 
 	// Event Listener for close edit modal
     const closeModalBtn = document.querySelector('#editCowModal .close-button');
