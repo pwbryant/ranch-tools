@@ -66,17 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // function populateEmptyBreedingSeasonInput() {
-    //     var breedingSeasonInput = document.getElementById('breeding-season-input');
-    //     // Check if the input is empty
-    //     if (!breedingSeasonInput.value) {
-    //         // Set the input value to the latest breeding season provided by Django's context
-    //         breedingSeasonInput.value = latestBreedingSeason;
-    //         document.getElementById('breeding_season').value = latestBreedingSeason;
-    //         updateStats();
-    //     }
-    // }
-
 	function handleFormSubmit(event) {
 		event.preventDefault(); // Prevent normal form submission
 		var form = document.getElementById('pregcheck-form');

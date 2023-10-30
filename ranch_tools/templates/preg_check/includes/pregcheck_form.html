@@ -21,7 +21,7 @@
                 {{ pregcheck_form.recheck }}
             </div>
         </div>
-        <button id="submit-btn" type="submit" {% if pregcheck_form.fields.is_pregnant.widget.attrs.disabled %}disabled{% endif %}>Submit Preg Check</button>
+        <button id="submit-btn" type="submit" {% if multiple_matches %}disabled title="Submission disabled. Multiple animals exist for the given animal ID."{% endif %}>Submit Preg Check</button>
     </form>
 </div>
 
