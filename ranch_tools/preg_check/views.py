@@ -22,7 +22,9 @@ class PregCheckListView(ListView):
     def get_queryset(self):
         animal_id = self.request.GET.get('search_animal_id', None)
         birth_year = self.request.GET.get('search_birth_year', None)
-        if animal_id:
+        if animal_id and animal_id.strip().lower() == 'all':
+            queryset = PregCheck.objects.all().order_by('-check_date')
+        elif animal_id:
             queryset = PregCheck.objects.filter(cow__animal_id=animal_id)
             if birth_year:
                 queryset = queryset.filter(cow__birth_year=birth_year)
@@ -61,6 +63,7 @@ class PregCheckListView(ListView):
 
         pregcheck_form.fields['breeding_season'].initial = datetime.now().year
 
+        context['all_preg_checks'] = False if animal_id is None else animal_id.strip().lower() == 'all'
         context['latest_breeding_season'] = PregCheck.objects.latest('id').breeding_season
         context['search_form'] = search_form
         context['pregcheck_form'] = pregcheck_form

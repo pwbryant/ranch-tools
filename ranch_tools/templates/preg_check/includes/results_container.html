@@ -13,6 +13,9 @@
             <thead>
                 <tr>
                     <th></th>
+                    {% if all_preg_checks %}
+                        <th>Animal ID</th>
+                    {% endif %}
                     <th>Preg Status</th>
                     <th>Check Date</th>
                     <th>Breeding Season</th>
@@ -27,6 +30,9 @@
                         <td><!-- Add this inside your loop to generate an "edit" button for each result -->
                             <button class="edit-button" data-pregcheck-id="{{ pregcheck.id }}">Edit</button>
                         </td>
+                        {% if all_preg_checks %}
+                            <td>{{ pregcheck.cow.animal_id }}</td>
+                        {% endif %}
                         {% if pregcheck.is_pregnant %}
                             <td>Pregnant</td>
                         {% else %}
