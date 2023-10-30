@@ -66,10 +66,16 @@ class PregCheckListView(ListView):
             initial={'search_animal_id': animal_id, 'search_birth_year': birth_year},
             birth_year_choices=[(y, str(y),) for y in distinct_birth_years]
         )
-
         pregcheck_form.fields['breeding_season'].initial = datetime.now().year
 
-        context['current_breeding_season'] = CurrentBreedingSeason.load().breeding_season
+        current_breeding_season = CurrentBreedingSeason.load().breeding_season
+        if animal_count == 1:
+            preg_checks_this_season = PregCheck.objects.filter(
+                cow=cow, breeding_season=current_breeding_season
+            ).count()
+            pregcheck_form.fields['recheck'].initial = preg_checks_this_season > 0
+
+        context['current_breeding_season'] = current_breeding_season
         context['all_preg_checks'] = False if animal_id is None else animal_id.strip().lower() == 'all'
         context['latest_breeding_season'] = PregCheck.objects.latest('id').breeding_season
         context['search_form'] = search_form

@@ -140,9 +140,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		function closeNoAnimalModal() {
 			noAnimalModal.style.display = 'none';
 		}
-
-		if (!animalExists) {
-			openNoAnimalModal(document.getElementById('id_search_animal_id').value);
+        const animalId = document.getElementById('id_search_animal_id').value;
+		if (!animalExists && animalId) {
+			openNoAnimalModal(animalId);
 		} else {
 			closeNoAnimalModal();
 		}
