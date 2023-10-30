@@ -66,16 +66,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function populateEmptyBreedingSeasonInput() {
-        var breedingSeasonInput = document.getElementById('breeding-season-input');
-        // Check if the input is empty
-        if (!breedingSeasonInput.value) {
-            // Set the input value to the latest breeding season provided by Django's context
-            breedingSeasonInput.value = latestBreedingSeason;
-            document.getElementById('breeding_season').value = latestBreedingSeason;
-            updateStats();
-        }
-    }
+    // function populateEmptyBreedingSeasonInput() {
+    //     var breedingSeasonInput = document.getElementById('breeding-season-input');
+    //     // Check if the input is empty
+    //     if (!breedingSeasonInput.value) {
+    //         // Set the input value to the latest breeding season provided by Django's context
+    //         breedingSeasonInput.value = latestBreedingSeason;
+    //         document.getElementById('breeding_season').value = latestBreedingSeason;
+    //         updateStats();
+    //     }
+    // }
 
 	function handleFormSubmit(event) {
 		event.preventDefault(); // Prevent normal form submission
@@ -183,11 +183,32 @@ document.addEventListener('DOMContentLoaded', function() {
 	document.querySelector('.close').addEventListener('click', handleModalCloseBtnClick);
 
     // Listen to Breeding Season input and update stats
-    document.querySelector('#breeding-season-input').addEventListener('input', function() {
-        var breedingSeason = this.value;
-        if(breedingSeason && breedingSeason.length === 4) {
+    const currentBreedingSeasonInput = document.getElementById('breeding-season-input');
+    currentBreedingSeasonInput.addEventListener('input', function() {
+        const inputValue = this.value;
+        if(inputValue && inputValue.length === 4) {
+            currentBreedingSeasonInput.value = inputValue;
+            fetch('/pregchecks/current-breeding-season/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ breeding_season: inputValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== 'success') {
+                    console.error("Failed to update breeding season:", data.message);
+                } else {
+                    document.getElementById('breeding_season').value = inputValue;
+                }
+
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
             updateStats();
-            document.getElementById('breeding_season').value = breedingSeason;
         }
     });
 
@@ -257,6 +278,5 @@ document.addEventListener('DOMContentLoaded', function() {
 	updateStats();
 	handleCreateAnimal();
     handleEditCowModal();
-    populateEmptyBreedingSeasonInput();
 });
 

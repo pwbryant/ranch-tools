@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from urllib.parse import urlencode
 
 from django.http import HttpResponseBadRequest, JsonResponse
@@ -8,8 +9,13 @@ from django.views import View
 from django.views.generic import ListView, CreateView, FormView
 from django.views.generic.edit import UpdateView
 
-from .forms import AnimalSearchForm, CowForm, EditPregCheckForm, PregCheckForm
-from .models import Cow, PregCheck
+from .forms import (
+    AnimalSearchForm,
+    CowForm,
+    EditPregCheckForm,
+    PregCheckForm
+)
+from .models import Cow, CurrentBreedingSeason, PregCheck
 
 from pdb import set_trace as bp
 
@@ -63,6 +69,7 @@ class PregCheckListView(ListView):
 
         pregcheck_form.fields['breeding_season'].initial = datetime.now().year
 
+        context['current_breeding_season'] = CurrentBreedingSeason.load().breeding_season
         context['all_preg_checks'] = False if animal_id is None else animal_id.strip().lower() == 'all'
         context['latest_breeding_season'] = PregCheck.objects.latest('id').breeding_season
         context['search_form'] = search_form
@@ -72,6 +79,21 @@ class PregCheckListView(ListView):
         context['distinct_birth_years'] = distinct_birth_years
         context['cow'] = cow
         return context
+
+
+class UpdateCurrentBreedingSeasonView(View):
+
+    def post(self, request, *args, **kwargs):
+        try:
+            # Assuming you're sending data as JSON
+            data = json.loads(request.body)
+            breeding_season = int(data.get('breeding_season'))
+            current_season = CurrentBreedingSeason.load()
+            current_season.breeding_season = breeding_season
+            current_season.save()
+            return JsonResponse({"status": "success"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
 
 
 class PregCheckRecordNewAnimalView(CreateView):

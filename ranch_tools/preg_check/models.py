@@ -1,6 +1,32 @@
 from django.db import models
 
-# Create your models here.
+
+class SingletonModel(models.Model):
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super(SingletonModel, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+    @classmethod
+    def load(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+class CurrentBreedingSeason(SingletonModel):
+    breeding_season = models.PositiveIntegerField()
+
+    def __repr__(self):
+        return f"Current Breeding Season: {self.breeding_season}"
+
+    def __str__(self):
+        return self.__repr__()
+
 
 
 class Cow(models.Model):

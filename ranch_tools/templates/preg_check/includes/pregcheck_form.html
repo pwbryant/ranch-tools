@@ -9,7 +9,7 @@
             {{ pregcheck_form.birth_year }}
         {% endif %}
         <label for="breeding_season">Breeding Season</label>
-        <input type="text" id="breeding_season" name="breeding_season" readonly>
+        <input type="text" id="breeding_season" name="breeding_season" value="{{ current_breeding_season }}" readonly>
 
         <label for="{{ pregcheck_form.comments.id_for_label }}">Comments</label>
         {{ pregcheck_form.comments }}

@@ -6,7 +6,7 @@
 <div class="container">
     <div class="breeding-season-container">
         <h2>Current Breeding Season:</h2>
-        <input type="text" id="breeding-season-input" placeholder="YYYY" maxlength="4" pattern="\d{4}" title="Enter a 4-digit year">
+        <input type="text" id="breeding-season-input" placeholder="YYYY" maxlength="4" pattern="\d{4}" title="Enter a 4-digit year" value="{{ current_breeding_season }}">
     </div>
     <div class="content-row">
         {% include 'preg_check/includes/stats_content.html' %}
