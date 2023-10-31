@@ -154,18 +154,31 @@ class PregCheckSummaryStatsView(View):
         if not stats_breeding_season:
             return HttpResponseBadRequest("stats_breeding_season parameter is required.")
 
-        total_pregnant = PregCheck.objects.filter(is_pregnant=True, breeding_season=stats_breeding_season).count()
-        total_open = PregCheck.objects.filter(is_pregnant=False, breeding_season=stats_breeding_season).count()
-        total_count = PregCheck.objects.filter(breeding_season=stats_breeding_season).count()
+        all_checks = PregCheck.objects.filter(breeding_season=stats_breeding_season)
+        total_pregnant_count = all_checks.filter(is_pregnant=True).count()
+        all_opens_count = all_checks.filter(is_pregnant=False).count()
 
-        pregnancy_rate = (total_pregnant / total_count) * 100 if total_count > 0 else 0
+        rechecks = all_checks.filter(recheck=True)
+        preg_rechecks_count = rechecks.filter(is_pregnant=True).count()
+        open_rechecks_count = rechecks.filter(is_pregnant=False).count()
+
+        first_pass_pregs_count = total_pregnant_count - preg_rechecks_count
+        first_pass_open_count = all_opens_count - open_rechecks_count
+
+        total_open_count = first_pass_open_count - preg_rechecks_count
+        total_count = total_open_count + total_pregnant_count
+        pregnancy_rate = (total_pregnant_count / total_count) * 100 if total_count > 0 else 0
 
         summary_stats = {
-            'total_pregnant': total_pregnant,
-            'total_open': total_open,
+            'first_check_pregnant': first_pass_pregs_count,
+            'recheck_pregnant': preg_rechecks_count,
+            'total_pregnant': total_pregnant_count,
+            'first_check_open': first_pass_open_count,
+            'less_recheck_pregnant': preg_rechecks_count,
+            'total_open': total_open_count,
             'total_count': total_count,
-            'pregnancy_rate': pregnancy_rate,
-        }
+            'pregnancy_rate': pregnancy_rate
+	}
 
         return JsonResponse(summary_stats)
 
