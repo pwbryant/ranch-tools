@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			noAnimalModal.style.display = 'none';
 		}
         const animalId = document.getElementById('id_search_animal_id').value;
-		if (!animalExists && animalId) {
+		if (!animalExists && animalId && animalId != 'all') {
 			openNoAnimalModal(animalId);
 		} else {
 			closeNoAnimalModal();
