@@ -53,12 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h2>Summary Stats</h2>
                         <p>Pregnant at 1st check: ${data.first_check_pregnant}</p>
                         <p>Recheck Pregnant: ${data.recheck_pregnant}</p>
-                        <p>Total Pregnant: ${data.total_pregnant}</p>
+                        <p><b>Total Pregnant: ${data.total_pregnant}</b></p>
                         <p>Open at 1st check: ${data.first_check_open}</p>
                         <p>Less recheck pregnant: -${data.recheck_pregnant}</p>
-                        <p>Total Open: ${data.total_open}</p>
-                        <p>Total Count: ${data.total_count}</p>
-                        <p>Pregnancy Rate: ${data.pregnancy_rate.toFixed(2)}%</p>
+                        <p><b>Total Open: ${data.total_open}</b></p>
+                        <p><b>Total Count: ${data.total_count}</b></p>
+                        <p><b>Pregnancy Rate: ${data.pregnancy_rate.toFixed(2)}%</b></p>
                     `;
                 })
                 .catch(error => {
