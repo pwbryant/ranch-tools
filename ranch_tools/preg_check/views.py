@@ -67,12 +67,7 @@ class PregCheckListView(ListView):
             birth_year_choices=[(y, str(y),) for y in distinct_birth_years]
         )
         pregcheck_form.fields['breeding_season'].initial = datetime.now().year
-
-        try:
-	    current_breeding_season = CurrentBreedingSeason.load().breeding_season
-	except:
-	    CurrentBreedingSeason.objects.create(breeding_season=2022)
-	    current_breeding_season = 2022
+        current_breeding_season = CurrentBreedingSeason.load().breeding_season
         if animal_count == 1:
             preg_checks_this_season = PregCheck.objects.filter(
                 cow=cow, breeding_season=current_breeding_season
