@@ -21,7 +21,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Event listeners for Edit Cow Modal
+    // Function for handling Create Cow Modal
+    function handleCreateCowModal() {
+        var modal = document.getElementById("createCowModal");
+        var createButton = document.getElementById("create-cow-btn");
+        console.log('create button', createButton);
+
+        console.log(modal);
+        if (createButton) {
+            // Show modal
+            createButton.onclick = function() {
+                console.log('click');
+                console.log(modal);
+                modal.style.display = "block";
+            }
+        }
+
+        // Hide modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+
 	function getCookie(name) {
 		let cookieValue = null;
 		if (document.cookie && document.cookie !== '') {
@@ -271,5 +294,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	updateStats();
 	handleCreateAnimal();
     handleEditCowModal();
+    handleCreateCowModal();
 });
 

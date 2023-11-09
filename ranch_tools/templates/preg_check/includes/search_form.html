@@ -13,6 +13,7 @@
         <button type="submit">Search For Animal</button>
         {% if animal_exists and not multiple_matches %}
             <button id="edit-cow-btn" type="button">Edit Cow</button>
+            <button id="create-cow-btn" type="button">Create New Cow With ID: "{{ cow.animal_id }}"</button>
         {% endif %}
      </form>
    {% include 'preg_check/includes/results_container.html' %}
