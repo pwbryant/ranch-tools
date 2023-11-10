@@ -1,5 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
 	// Function definitions
+    //
+    function clearBirthYearWhenSearchIdChanges() {
+        var searchInput = document.getElementById("id_search_animal_id");
+        searchInput.addEventListener('input', function() {
+            document.querySelectorAll('input[name="search_birth_year"]').forEach(item => {
+                item.checked = false;
+            });
+        });
+    }
+    clearBirthYearWhenSearchIdChanges();
 
     // Function for handling Edit Cow Modal
     function handleEditCowModal() {
