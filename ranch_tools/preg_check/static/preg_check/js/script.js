@@ -25,14 +25,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleCreateCowModal() {
         var modal = document.getElementById("createCowModal");
         var createButton = document.getElementById("create-cow-btn");
-        console.log('create button', createButton);
 
-        console.log(modal);
         if (createButton) {
             // Show modal
             createButton.onclick = function() {
-                console.log('click');
-                console.log(modal);
                 modal.style.display = "block";
             }
         }
@@ -145,6 +141,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		modal.style.display = 'none';
 	}
 
+	function closeEditCowModal() {
+		var modal = document.getElementById('editCowModal');
+		modal.style.display = 'none';
+	}
+
+	function closeCreateNewSameIdCowModal() {
+		var modal = document.getElementById('createCowModal');
+		modal.style.display = 'none';
+	}
+
 	function handleModalCloseBtnClick() {
 		closeModal();
 	}
@@ -192,9 +198,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 	// Event Listeners
+    function listenToModalClosers(modalId, closers) {
+        closers.forEach(selector => {
+            var closerElem = document.querySelector(selector);
+            if (closerElem) {
+                closerElem.addEventListener('click', function() {
+                    var modal = document.getElementById(modalId);
+                    modal.style.display = 'none';
+                });
+            }
+        });
+    }
+
+    // Edit Cow
+    function listenToEditCowModal() {
+        listenToModalClosers('editCowModal', ['#edit-cow-modal-cancel-btn', '#editCowModal .close']);
+    }
+    listenToEditCowModal();
+
+
+    // Edit Preg check record 
     document.querySelector('#edit-modal .close').addEventListener('click', closePregCheckEditModal);
+
+    // Create same ID cow
+    function listenToCreateSameIdCowModal() {
+        listenToModalClosers('createCowModal', ['#create-cow-modal-cancel-btn', '#createCowModal .close']);
+    }
+    listenToCreateSameIdCowModal();
+
+
+    // Create new ID cow
     document.querySelector('#no-animal-modal .close').addEventListener('click', closeNoAnimalModal);
     document.getElementById('cancel-create-btn').addEventListener('click', closeNoAnimalModal);
+
+
 	document.getElementById('pregcheck-form').addEventListener('submit', handleFormSubmit);
 	document.querySelector('.close').addEventListener('click', handleModalCloseBtnClick);
 
@@ -228,14 +265,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-	// Event Listener for close edit modal
-    const closeModalBtn = document.querySelector('#editCowModal .close-button');
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', function() {
-            const modal = document.getElementById('editCowModal');
-            modal.style.display = 'none';
-        });
-    }
     // Event listener for "edit" buttons
     document.querySelectorAll('.edit-button').forEach(button => {
         button.addEventListener('click', () => {
