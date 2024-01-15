@@ -32,6 +32,8 @@ class CurrentBreedingSeason(SingletonModel):
 class Cow(models.Model):
     animal_id = models.CharField(max_length=10)
     birth_year = models.IntegerField(blank=True, null=True)
+    eid = models.CharField(max_length=20, blank=True, null=True, unique=True)
+    comments = models.TextField(blank=True)
 
     def __repr__(self):
         return f'"{self.animal_id}-{self.birth_year}"'
