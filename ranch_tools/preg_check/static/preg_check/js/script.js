@@ -66,7 +66,89 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 		return cookieValue;
 	}
+    function updatePreviousPregcheckList() {
+        const content = document.getElementById('previous-pregcheck-content');
+        content.innerHTML = '';
+        fetch(previousPregcheckUrl)
+            .then(response => response.json())
+            .then(data => {
+                
+                // Create header container
+                const headerContainer = document.createElement('div');
+                headerContainer.className = 'header-container';
+                content.appendChild(headerContainer);
 
+                // Create toggle icon
+                const toggleIcon = document.createElement('span');
+                toggleIcon.className = 'toggle-icon';
+                toggleIcon.innerHTML = '▼'; // Unicode down-pointing triangle
+                headerContainer.appendChild(toggleIcon);
+
+                // Create header text
+                const headerText = document.createElement('span');
+                headerText.className = 'header-text';
+                headerText.textContent = 'Previous Pregchecks';
+                headerContainer.appendChild(headerText);
+
+                // Create a container for the pregcheck entries
+                const entriesContainer = document.createElement('div');
+                entriesContainer.id = 'pregcheck-entries';
+                content.appendChild(entriesContainer);
+
+                // Toggle functionality
+                let isVisible = true;
+                headerContainer.onclick = () => {
+                    isVisible = !isVisible;
+                    entriesContainer.style.display = isVisible ? 'block' : 'none';
+                    toggleIcon.innerHTML = isVisible ? '▼' : '▶'; // Change triangle direction
+                    headerText.textContent = isVisible ? 'Previous Pregchecks' : 'Previous Pregchecks';
+                };
+
+                data.pregchecks.forEach((p, index) => {
+                    let entryBox = document.createElement('div');
+                    entryBox.className = 'entry-box';
+                    entryBox.innerHTML = `
+                        <div class="entry-item"><strong>Cow ID:</strong> ${p.animal_id}</div>
+                        <div class="entry-item"><strong>Pregnant:</strong> ${p.is_pregnant ? 'Yes' : 'No'}</div>
+                    `;
+                    
+                    // Alternating background color
+                    entryBox.classList.add(index % 2 === 0 ? 'entry-box-even' : 'entry-box-odd');
+                    
+                    // Hover effects and click functionality
+                    entryBox.style.cursor = 'pointer';
+                    // entryBox.onclick = () => populatePregcheckForm(p);
+                    entryBox.onclick = () => populateEditModal(p);
+                    
+                    entriesContainer.appendChild(entryBox);
+                });
+            })
+            .catch(error => {
+                const errMsg = 'Error fetching previous pregchecks';
+                console.error(errMsg);
+                content.innerHTML = errMsg;
+            });
+    }
+
+    function populatePregcheckForm(pregcheckData) {
+        // Populate text inputs
+        document.getElementById('id_pregcheck_animal_id').value = pregcheckData.cow_id;
+        document.getElementById('id_birth_year').value = pregcheckData.birth_year;
+        document.getElementById('breeding_season').value = pregcheckData.breeding_season;
+        document.getElementById('id_comments').value = pregcheckData.comments;
+
+        // Set radio button for pregnancy status
+        const isPregnantRadio = document.getElementById(pregcheckData.is_pregnant ? 'id_is_pregnant_0' : 'id_is_pregnant_1');
+        if (isPregnantRadio) {
+            isPregnantRadio.checked = true;
+        }
+
+        // Set checkbox for recheck
+        document.getElementById('id_recheck').checked = pregcheckData.is_recheck;
+
+        // Optionally, scroll to the form
+        document.getElementById('pregcheck-form').scrollIntoView({ behavior: 'smooth' });
+    }
 	function updateStats() {
         // Make an AJAX request to fetch the summary stats
         const statsContent = document.getElementById('stats-content');
@@ -112,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		xhr.onload = function() {
 			if (xhr.status === 200) {
                 updateStats();
+                updatePreviousPregcheckList();
 				// Display success message
 				messageContainer.textContent = 'PregCheck created successfully';
 				messageContainer.classList.add('success');
@@ -197,10 +280,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	// Function to populate the edit modal with data
     function populateEditModal(pregcheckData) {
         // Populate form fields in the edit modal with data from pregcheckData
+        document.getElementById('edit-animal-id').value = pregcheckData.animal_id;
+        document.getElementById('edit-birth-year').value = pregcheckData.animal_birth_year;
+        document.getElementById('edit-breeding-season').value = pregcheckData.breeding_season;
         document.getElementById('edit-pregcheck-id').value = pregcheckData.id;
         document.getElementById('edit-is_pregnant').value = pregcheckData.is_pregnant.toString();
         document.getElementById('edit-comments').value = pregcheckData.comments;
-        document.getElementById('edit-recheck').value = pregcheckData.recheck;
+        document.getElementById('edit-recheck').checked = pregcheckData.recheck;
+
         
         // Show the edit modal
         const editModal = document.getElementById('edit-modal');
@@ -328,11 +415,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	window.addEventListener('click', handleWindowClick);
 
+	function editPregCheckModalSetup() {
+        const animalIdInput = document.getElementById('edit-animal-id');
+        const initialAnimalId = animalIdInput.value;
+        // Initially hide the birth year div
+        const birthYearDiv = document.querySelector('.form-group:has(#edit-birth-year)');
+        birthYearDiv.style.display = 'none';
+        // Add event listener for input changes
+        animalIdInput.addEventListener('input', function() {
+            if (this.value !== initialAnimalId) {
+                birthYearDiv.style.display = 'block';
+                const birthYearInput = document.getElementById('edit-birth-year');
+                birthYearInput.value = '';
+            } else {
+                birthYearDiv.style.display = 'none';
+            }
+        });
+    }
+
 
 	// Initial Actions
 	updateStats();
+    updatePreviousPregcheckList();
 	handleCreateAnimal();
     handleEditCowModal();
     handleCreateCowModal();
+    editPregCheckModalSetup();
 });
 

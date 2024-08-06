@@ -171,3 +171,55 @@
 .checkbox-input {
 	margin-left: 10px; /* Adjust the margin as needed for spacing */
 }
+
+ul {
+    list-style-type: none;
+    padding:0;
+    margin: 0;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 15px;
+}
+
+.toggle-icon {
+    margin-right: 10px;
+    font-size: 1em; /* Adjusted to match the new header text size */
+}
+
+.header-text {
+    font-size: 1.5em; /* Typically the size of an h4 */
+    font-weight: bold;
+    margin: 0;
+}
+
+.entry-box {
+    padding: 10px;
+    /* margin: 10px 0; */
+    transition: background-color 0.3s ease;
+    border-radius: 5px;
+}
+
+.entry-box-even {
+    background-color: #ffffff;
+}
+
+.entry-box-odd {
+    background-color: #e0e0e0;
+}
+
+.entry-item {
+    margin-bottom: 4px;
+}
+
+.entry-item:last-child {
+    margin-bottom: 0;
+}
+
+.entry-box:hover {
+    background-color: #d0d0d0;
+}

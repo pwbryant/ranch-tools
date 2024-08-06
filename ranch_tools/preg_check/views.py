@@ -2,6 +2,7 @@ from datetime import datetime
 import json
 from urllib.parse import urlencode
 
+from django.db.models import F
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -18,6 +19,19 @@ from .forms import (
 from .models import Cow, CurrentBreedingSeason, PregCheck
 
 from pdb import set_trace as bp
+
+
+class PreviousPregCheckListView(View):
+    def get(self, request, *args, **kwargs):
+        limit = request.GET.get('limit', 10)
+        current_breeding_season = CurrentBreedingSeason.load().breeding_season
+        pregchecks = PregCheck.objects.filter(
+            breeding_season=current_breeding_season
+        ).annotate(
+            animal_id=F('cow__animal_id'), animal_birth_year=F('cow__birth_year')
+        ).order_by('-check_date' , '-id')
+        pregchecks = pregchecks.values()[:limit]
+        return JsonResponse({'pregchecks': list(pregchecks)}, safe=False)
 
 
 class PregCheckListView(ListView):
