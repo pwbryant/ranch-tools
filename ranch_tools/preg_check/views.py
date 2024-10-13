@@ -23,7 +23,7 @@ from pdb import set_trace as bp
 
 class PreviousPregCheckListView(View):
     def get(self, request, *args, **kwargs):
-        limit = request.GET.get('limit', 10)
+        limit = request.GET.get('limit', 5)
         current_breeding_season = CurrentBreedingSeason.load().breeding_season
         pregchecks = PregCheck.objects.filter(
             breeding_season=current_breeding_season

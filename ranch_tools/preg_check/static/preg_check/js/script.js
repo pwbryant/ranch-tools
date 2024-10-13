@@ -149,7 +149,69 @@ document.addEventListener('DOMContentLoaded', function() {
         // Optionally, scroll to the form
         document.getElementById('pregcheck-form').scrollIntoView({ behavior: 'smooth' });
     }
-	function updateStats() {
+
+    function updateStats() {
+        const content = document.getElementById('stats-content');
+        const breedingSeason = document.getElementById('breeding-season-input').value;
+    
+        // Check if breedingSeason is numeric and has a length of 4
+        if (breedingSeason.length === 4 && !isNaN(breedingSeason)) {
+            fetch(pregcheckSummaryStatsUrl + '?stats_breeding_season=' + breedingSeason)
+                .then(response => response.json())
+                .then(data => {
+                    // Create header container
+                    const headerContainer = document.createElement('div');
+                    headerContainer.className = 'header-container';
+                    content.innerHTML = '';
+                    content.appendChild(headerContainer);
+    
+                    // Create toggle icon
+                    const toggleIcon = document.createElement('span');
+                    toggleIcon.className = 'toggle-icon';
+                    toggleIcon.innerHTML = '▼';
+                    headerContainer.appendChild(toggleIcon);
+    
+                    // Create header text
+                    const headerText = document.createElement('span');
+                    headerText.className = 'header-text';
+                    headerText.textContent = 'New Summary Stats';
+                    headerContainer.appendChild(headerText);
+    
+                    // Create a container for the stats entries
+                    const entriesContainer = document.createElement('div');
+                    entriesContainer.id = 'stats-entries';
+                    content.appendChild(entriesContainer);
+    
+                    // Toggle functionality
+                    let isVisible = true;
+                    headerContainer.onclick = () => {
+                        isVisible = !isVisible;
+                        entriesContainer.style.display = isVisible ? 'block' : 'none';
+                        toggleIcon.innerHTML = isVisible ? '▼' : '▶';
+                    };
+    
+                    // Populate stats content
+                    entriesContainer.innerHTML = `
+                        <p>Pregnant at 1st check: ${data.first_check_pregnant}</p>
+                        <p>Recheck Pregnant: ${data.recheck_pregnant}</p>
+                        <p><b>Total Pregnant: ${data.total_pregnant}</b></p>
+                        <p>Open at 1st check: ${data.first_check_open}</p>
+                        <p>Less recheck pregnant: -${data.recheck_pregnant}</p>
+                        <p><b>Total Open: ${data.total_open}</b></p>
+                        <p><b>Total Count: ${data.total_count}</b></p>
+                        <p><b>Pregnancy Rate: ${data.pregnancy_rate.toFixed(2)}%</b></p>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error fetching summary stats:', error);
+                    content.innerHTML = 'Error fetching summary stats.';
+                });
+        } else {
+            content.innerHTML = 'Please provide a valid 4-digit breeding season.';
+        }
+    }
+
+	function xupdateStats() {
         // Make an AJAX request to fetch the summary stats
         const statsContent = document.getElementById('stats-content');
         const breedingSeason = document.getElementById('breeding-season-input').value;

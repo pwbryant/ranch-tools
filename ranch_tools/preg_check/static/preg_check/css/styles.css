@@ -98,6 +98,10 @@
     margin-top: 10px;
 }
 
+textarea {
+    height: 50px;
+}
+
 .result-container {
     margin-top: 20px;
     width: 100%;
@@ -222,4 +226,29 @@ ul {
 
 .entry-box:hover {
     background-color: #d0d0d0;
+}
+
+#stats-content .header-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 15px;
+}
+
+#stats-content .toggle-icon {
+    margin-right: 10px;
+    font-size: 1em;
+}
+
+#stats-content .header-text {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 0;
+}
+
+#stats-entries {
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
 }
