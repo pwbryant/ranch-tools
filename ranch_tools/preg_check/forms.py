@@ -16,11 +16,11 @@ class AnimalSearchForm(forms.Form):
             widget=forms.RadioSelect,
             required=False
         )
-    search_ear_tag_id = forms.CharField(label='Animal ID')
+    search_ear_tag_id = forms.CharField(label='Ear Tag ID')
 
 
 class PregCheckForm(forms.ModelForm):
-    pregcheck_ear_tag_id = forms.CharField(label='Animal ID', required=False)
+    pregcheck_ear_tag_id = forms.CharField(label='Ear Tag ID', required=False)
     birth_year = forms.CharField(required=False, widget=forms.HiddenInput())
     is_pregnant = forms.ChoiceField(
         label='Status',
@@ -46,7 +46,7 @@ class CowForm(forms.ModelForm):
         fields = ['ear_tag_id', 'birth_year']
 
     ear_tag_id = forms.CharField(
-        label='Animal ID',
+        label='Ear Tag ID',
         max_length=255,
         required=True,
         widget=forms.TextInput(attrs={'readonly': 'readonly'})

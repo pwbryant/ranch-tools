@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     let entryBox = document.createElement('div');
                     entryBox.className = 'entry-box';
                     entryBox.innerHTML = `
-                        <div class="entry-item"><strong>Cow ID:</strong> ${p.ear_tag_id}</div>
+                        <div class="entry-item"><strong>Ear Tag ID:</strong> ${p.ear_tag_id}</div>
                         <div class="entry-item"><strong>Pregnant:</strong> ${p.is_pregnant ? 'Yes' : 'No'}</div>
                     `;
                     
