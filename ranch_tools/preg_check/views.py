@@ -28,7 +28,7 @@ class PreviousPregCheckListView(View):
         pregchecks = PregCheck.objects.filter(
             breeding_season=current_breeding_season
         ).annotate(
-            animal_id=F('cow__animal_id'), animal_birth_year=F('cow__birth_year')
+            ear_tag_id=F('cow__ear_tag_id'), animal_birth_year=F('cow__birth_year')
         ).order_by('-check_date' , '-id')
         pregchecks = pregchecks.values()[:limit]
         return JsonResponse({'pregchecks': list(pregchecks)}, safe=False)
@@ -40,15 +40,15 @@ class PregCheckListView(ListView):
     context_object_name = 'pregchecks'
 
     def get_queryset(self):
-        animal_id = self.request.GET.get('search_animal_id', None)
+        ear_tag_id = self.request.GET.get('search_ear_tag_id', None)
         birth_year = self.request.GET.get('search_birth_year', None)
-        if animal_id and animal_id.strip().lower() == 'all':
+        if ear_tag_id and ear_tag_id.strip().lower() == 'all':
             current_breeding_season = CurrentBreedingSeason.load().breeding_season
             queryset = PregCheck.objects.filter(
                 breeding_season=current_breeding_season
             ).order_by('-check_date' , '-id')
-        elif animal_id:
-            queryset = PregCheck.objects.filter(cow__animal_id=animal_id)
+        elif ear_tag_id:
+            queryset = PregCheck.objects.filter(cow__ear_tag_id=ear_tag_id)
             if birth_year:
                 queryset = queryset.filter(cow__birth_year=birth_year)
             queryset = queryset.order_by('-check_date', '-id')
@@ -58,17 +58,17 @@ class PregCheckListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        animal_id = self.request.GET.get('search_animal_id', None)
+        ear_tag_id = self.request.GET.get('search_ear_tag_id', None)
         birth_year = self.request.GET.get('search_birth_year', None)
         pregcheck_form = PregCheckForm()
-        animals = Cow.objects.filter(animal_id=animal_id)
+        animals = Cow.objects.filter(ear_tag_id=ear_tag_id)
         if birth_year:
             animals = animals.filter(birth_year=birth_year)
             pregcheck_form.fields['birth_year'].initial = birth_year
         animal_exists = None
-        if animal_id:
-            animal_exists = Cow.objects.filter(animal_id=animal_id).exists()
-            pregcheck_form.fields['pregcheck_animal_id'].initial = animal_id
+        if ear_tag_id:
+            animal_exists = Cow.objects.filter(ear_tag_id=ear_tag_id).exists()
+            pregcheck_form.fields['pregcheck_ear_tag_id'].initial = ear_tag_id
 
         animal_count = animals.count()
         cow = None
@@ -80,7 +80,7 @@ class PregCheckListView(ListView):
             distinct_birth_years = animals.values_list('birth_year', flat=True).distinct()
 
         search_form = AnimalSearchForm(
-            initial={'search_animal_id': animal_id, 'search_birth_year': birth_year},
+            initial={'search_ear_tag_id': ear_tag_id, 'search_birth_year': birth_year},
             birth_year_choices=[(y, str(y),) for y in distinct_birth_years]
         )
         pregcheck_form.fields['breeding_season'].initial = datetime.now().year
@@ -92,7 +92,7 @@ class PregCheckListView(ListView):
             pregcheck_form.fields['recheck'].initial = preg_checks_this_season > 0
 
         context['current_breeding_season'] = current_breeding_season
-        context['all_preg_checks'] = False if animal_id is None else animal_id.strip().lower() == 'all'
+        context['all_preg_checks'] = False if ear_tag_id is None else ear_tag_id.strip().lower() == 'all'
         context['latest_breeding_season'] = PregCheck.objects.latest('id').breeding_season
         context['search_form'] = search_form
         context['pregcheck_form'] = pregcheck_form
@@ -129,21 +129,21 @@ class PregCheckRecordNewAnimalView(CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        animal_id = self.kwargs.get('animal_id')
-        if animal_id:
-            initial['pregcheck_animal_id'] = animal_id
+        ear_tag_id = self.kwargs.get('ear_tag_id')
+        if ear_tag_id:
+            initial['pregcheck_ear_tag_id'] = ear_tag_id
 
         return initial
 
     def form_valid(self, form):
-        animal_id = form.cleaned_data['pregcheck_animal_id']
+        ear_tag_id = form.cleaned_data['pregcheck_ear_tag_id']
         birth_year = form.cleaned_data['birth_year']
         birth_year = None if not birth_year else birth_year
-        if animal_id and birth_year:
-            cow, created = Cow.objects.get_or_create(animal_id=animal_id, birth_year=birth_year)
+        if ear_tag_id and birth_year:
+            cow, created = Cow.objects.get_or_create(ear_tag_id=ear_tag_id, birth_year=birth_year)
             form.instance.cow = cow
-        elif animal_id:
-            cow, created = Cow.objects.get_or_create(animal_id=animal_id)
+        elif ear_tag_id:
+            cow, created = Cow.objects.get_or_create(ear_tag_id=ear_tag_id)
             form.instance.cow = cow
 
         return super().form_valid(form)
@@ -206,7 +206,7 @@ class CowCreateView(CreateView):
     def get_success_url(self):
         cow = self.object
         query_parameters = {
-            'search_animal_id': cow.animal_id,
+            'search_ear_tag_id': cow.ear_tag_id,
             'search_birth_year': cow.birth_year
         }
         url = reverse('pregcheck-list') + '?' + urlencode(query_parameters)
@@ -225,7 +225,7 @@ class CowUpdateView(UpdateView):
         # Construct the URL for redirection
         redirect_url = reverse('pregcheck-list')
         query_parameters = {
-            'search_animal_id': self.object.animal_id,
+            'search_ear_tag_id': self.object.ear_tag_id,
             'search_birth_year': form.cleaned_data['birth_year']
         }
         full_redirect_url = redirect_url + '?' + urlencode(query_parameters)

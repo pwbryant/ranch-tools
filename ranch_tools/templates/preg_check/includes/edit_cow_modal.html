@@ -7,8 +7,8 @@
         <form method="post" action="{% url 'cow-update' pk=cow.id %}">
             {% csrf_token %}
             <div class="form-group">
-                <label for="edit_animal_id">Animal ID:</label>
-                <input type="text" id="edit_animal_id" name="animal_id" readonly value="{{ cow.animal_id }}">
+                <label for="edit_ear_tag_id">Ear Tag ID:</label>
+                <input type="text" id="edit_ear_tag_id" name="ear_tag_id" readonly value="{{ cow.ear_tag_id }}">
             </div>
             <div class="form-group">
                 <label for="edit_birth_year">Birth Year:</label>

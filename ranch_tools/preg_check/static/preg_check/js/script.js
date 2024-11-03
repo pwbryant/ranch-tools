@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// Function definitions
     //
     function clearBirthYearWhenSearchIdChanges() {
-        var searchInput = document.getElementById("id_search_animal_id");
+        var searchInput = document.getElementById("id_search_ear_tag_id");
         searchInput.addEventListener('input', function() {
             document.querySelectorAll('input[name="search_birth_year"]').forEach(item => {
                 item.checked = false;
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     let entryBox = document.createElement('div');
                     entryBox.className = 'entry-box';
                     entryBox.innerHTML = `
-                        <div class="entry-item"><strong>Cow ID:</strong> ${p.animal_id}</div>
+                        <div class="entry-item"><strong>Cow ID:</strong> ${p.ear_tag_id}</div>
                         <div class="entry-item"><strong>Pregnant:</strong> ${p.is_pregnant ? 'Yes' : 'No'}</div>
                     `;
                     
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function populatePregcheckForm(pregcheckData) {
         // Populate text inputs
-        document.getElementById('id_pregcheck_animal_id').value = pregcheckData.cow_id;
+        document.getElementById('id_pregcheck_ear_tag_id').value = pregcheckData.cow_id;
         document.getElementById('id_birth_year').value = pregcheckData.birth_year;
         document.getElementById('breeding_season').value = pregcheckData.breeding_season;
         document.getElementById('id_comments').value = pregcheckData.comments;
@@ -320,17 +320,17 @@ document.addEventListener('DOMContentLoaded', function() {
 	function handleCreateAnimal() {
 		const noAnimalModal = document.getElementById('no-animal-modal');
 		
-		function openNoAnimalModal(animalId) {
+		function openNoAnimalModal(earTagId) {
 			noAnimalModal.style.display = 'block';
-			document.getElementById('new_animal_id').value = animalId;
+			document.getElementById('new_ear_tag_id').value = earTagId;
 		}
 
 		function closeNoAnimalModal() {
 			noAnimalModal.style.display = 'none';
 		}
-        const animalId = document.getElementById('id_search_animal_id').value;
-		if (!animalExists && animalId && animalId != 'all') {
-			openNoAnimalModal(animalId);
+        const earTagId = document.getElementById('id_search_ear_tag_id').value;
+		if (!animalExists && earTagId && earTagId != 'all') {
+			openNoAnimalModal(earTagId);
 		} else {
 			closeNoAnimalModal();
 		}
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// Function to populate the edit modal with data
     function populateEditModal(pregcheckData) {
         // Populate form fields in the edit modal with data from pregcheckData
-        document.getElementById('edit-animal-id').value = pregcheckData.animal_id;
+        document.getElementById('edit-ear-tag-id').value = pregcheckData.ear_tag_id;
         document.getElementById('edit-birth-year').value = pregcheckData.animal_birth_year;
         document.getElementById('edit-breeding-season').value = pregcheckData.breeding_season;
         document.getElementById('edit-pregcheck-id').value = pregcheckData.id;
@@ -478,13 +478,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	window.addEventListener('click', handleWindowClick);
 
 	function editPregCheckModalSetup() {
-        const animalIdInput = document.getElementById('edit-animal-id');
-        const initialAnimalId = animalIdInput.value;
+        const earTagIdInput = document.getElementById('edit-ear-tag-id');
+        const initialAnimalId = earTagIdInput.value;
         // Initially hide the birth year div
         const birthYearDiv = document.querySelector('.form-group:has(#edit-birth-year)');
         birthYearDiv.style.display = 'none';
         // Add event listener for input changes
-        animalIdInput.addEventListener('input', function() {
+        earTagIdInput.addEventListener('input', function() {
             if (this.value !== initialAnimalId) {
                 birthYearDiv.style.display = 'block';
                 const birthYearInput = document.getElementById('edit-birth-year');
@@ -497,9 +497,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 	// Initial Actions
-	updateStats();
+    updateStats();
     updatePreviousPregcheckList();
-	handleCreateAnimal();
+    handleCreateAnimal();
     handleEditCowModal();
     handleCreateCowModal();
     editPregCheckModalSetup();

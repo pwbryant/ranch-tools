@@ -16,11 +16,11 @@ class AnimalSearchForm(forms.Form):
             widget=forms.RadioSelect,
             required=False
         )
-    search_animal_id = forms.CharField(label='Animal ID')
+    search_ear_tag_id = forms.CharField(label='Animal ID')
 
 
 class PregCheckForm(forms.ModelForm):
-    pregcheck_animal_id = forms.CharField(label='Animal ID', required=False)
+    pregcheck_ear_tag_id = forms.CharField(label='Animal ID', required=False)
     birth_year = forms.CharField(required=False, widget=forms.HiddenInput())
     is_pregnant = forms.ChoiceField(
         label='Status',
@@ -43,9 +43,9 @@ class PregCheckForm(forms.ModelForm):
 class CowForm(forms.ModelForm):
     class Meta:
         model = Cow
-        fields = ['animal_id', 'birth_year']
+        fields = ['ear_tag_id', 'birth_year']
 
-    animal_id = forms.CharField(
+    ear_tag_id = forms.CharField(
         label='Animal ID',
         max_length=255,
         required=True,
@@ -60,48 +60,48 @@ class CowForm(forms.ModelForm):
 
 
 class EditPregCheckForm(forms.ModelForm):
-    animal_id = forms.CharField(max_length=10, required=False)
+    ear_tag_id = forms.CharField(max_length=10, required=False)
     birth_year = forms.CharField(max_length=4, required=False)
 
     class Meta:
         model = PregCheck
-        fields = ['animal_id', 'birth_year', 'breeding_season', 'is_pregnant', 'comments', 'recheck']
+        fields = ['ear_tag_id', 'birth_year', 'breeding_season', 'is_pregnant', 'comments', 'recheck']
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             if self.instance.cow:
-                self.fields['animal_id'].initial = self.instance.cow.animal_id
+                self.fields['ear_tag_id'].initial = self.instance.cow.ear_tag_id
                 self.fields['birth_year'].initial = self.instance.cow.birth_year
 
     def clean(self):
         cleaned_data = super().clean()
-        animal_id = cleaned_data.get('animal_id')
+        ear_tag_id = cleaned_data.get('ear_tag_id')
         birth_year = cleaned_data.get('birth_year')
-        if animal_id and birth_year:
+        if ear_tag_id and birth_year:
             try:
-                cow = Cow.objects.get(animal_id=animal_id, birth_year=birth_year)
+                cow = Cow.objects.get(ear_tag_id=ear_tag_id, birth_year=birth_year)
             except Cow.DoesNotExist:
-                raise ValidationError(f"No cow found with animal_id {animal_id} and birth_year {birth_year}")
-        elif animal_id:
+                raise ValidationError(f"No cow found with ear_tag_id {ear_tag_id} and birth_year {birth_year}")
+        elif ear_tag_id:
             try:
-                cow = Cow.objects.get(animal_id=animal_id)
+                cow = Cow.objects.get(ear_tag_id=ear_tag_id)
             except Cow.DoesNotExist:
-                raise ValidationError(f"No cow found with animal_id {animal_id}")
+                raise ValidationError(f"No cow found with ear_tag_id {ear_tag_id}")
 
         return cleaned_data
 
     def save(self, commit=True):
         preg_check = super().save(commit=False)
-        animal_id = self.cleaned_data.get('animal_id')
+        ear_tag_id = self.cleaned_data.get('ear_tag_id')
         birth_year = self.cleaned_data.get('birth_year')
         
-        if animal_id:
+        if ear_tag_id:
             try:
-                cow = Cow.objects.get(animal_id=animal_id, birth_year=birth_year)
+                cow = Cow.objects.get(ear_tag_id=ear_tag_id, birth_year=birth_year)
                 preg_check.cow = cow
             except Cow.DoesNotExist:
-                # This shouldn't happen due to clean_animal_id, but just in case
-                raise ValidationError(f"No cow found with animal_id {animal_id}")
+                # This shouldn't happen due to clean_ear_tag_id, but just in case
+                raise ValidationError(f"No cow found with ear_tag_id {ear_tag_id}")
 
         if commit:
             preg_check.save()

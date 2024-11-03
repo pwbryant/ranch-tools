@@ -30,19 +30,19 @@ class CurrentBreedingSeason(SingletonModel):
 
 
 class Cow(models.Model):
-    animal_id = models.CharField(max_length=10)
+    ear_tag_id = models.CharField(max_length=10)
     birth_year = models.IntegerField(blank=True, null=True)
     eid = models.CharField(max_length=20, blank=True, null=True, unique=True)
     comments = models.TextField(blank=True)
 
     def __repr__(self):
-        return f'"{self.animal_id}-{self.birth_year}"'
+        return f'"{self.ear_tag_id}-{self.birth_year}"'
 
     def __str__(self):
         return self.__repr__()
 
     class Meta:
-        unique_together = [['animal_id', 'birth_year']]
+        unique_together = [['ear_tag_id', 'birth_year']]
 
 
 class PregCheck(models.Model):

@@ -14,7 +14,7 @@
                 <tr>
                     <th></th>
                     {% if all_preg_checks %}
-                        <th>Animal ID</th>
+                        <th>Ear Tag ID</th>
                     {% endif %}
                     <th>Preg Status</th>
                     <th>Check Date</th>
@@ -31,7 +31,7 @@
                             <button class="edit-button" data-pregcheck-id="{{ pregcheck.id }}">Edit</button>
                         </td>
                         {% if all_preg_checks %}
-                            <td>{{ pregcheck.cow.animal_id }}</td>
+                            <td>{{ pregcheck.cow.ear_tag_id }}</td>
                         {% endif %}
                         {% if pregcheck.is_pregnant %}
                             <td>Pregnant</td>
@@ -49,7 +49,7 @@
         </table>
     {% else %}
         {% if search_form.is_bound %}
-            <p>Animal ID not found</p>
+            <p>Ear Tag ID not found</p>
         {% endif %}
     {% endif %}
 </div>

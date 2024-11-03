@@ -28,7 +28,8 @@ SECRET_KEY = 'django-insecure-!5d6zqi-=lze$2jd=a$u$(52e)glrkvar)8n3l-%%9$ms8@pgw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'ranch_tools.local', 'ranch.10.0.0.206']
+#ALLOWED_HOSTS = ['ranch_tools.local', 'localhost', '10.0.0.206', '127.0.0.1']
 
 
 # Application definition
@@ -86,7 +87,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db_with_ear_tag_change_11_3_24.sqlite3',
     }
 }
 
@@ -126,6 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
 # STATICFILES_DIRS = [
 #     PROJ_DIR / 'static',
 # ]
@@ -138,3 +140,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # extended user model
 AUTH_USER_MODEL = 'users.User'
+
+
+# Also add this setting to suppress the RFC validation
+USE_X_FORWARDED_HOST = True
+ALLOWED_HOSTS_OVERRIDE = True
