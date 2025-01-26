@@ -2,7 +2,6 @@
 db.sqlite3
 **/__pycache__/
 .ipynb_checkpoints
-*.ipynb
 *.swp
 *.swo
 pytest.ini
