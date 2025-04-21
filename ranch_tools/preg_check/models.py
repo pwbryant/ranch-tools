@@ -28,7 +28,6 @@ class CurrentBreedingSeason(SingletonModel):
         return self.__repr__()
 
 
-
 class Cow(models.Model):
     ear_tag_id = models.CharField(max_length=10)
     birth_year = models.IntegerField(blank=True, null=True)

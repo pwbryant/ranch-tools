@@ -4,6 +4,9 @@
         {% csrf_token %}
         <label for="{{ pregcheck_form.pregcheck_ear_tag_id.id_for_label }}">Ear Tag ID</label>
         {{ pregcheck_form.pregcheck_ear_tag_id }}
+        <label for="{{ pregcheck_form.pregcheck_rfid.id_for_label }}">RFID</label>
+        {{ pregcheck_form.pregcheck_rfid }}
+
         {{ pregcheck_form.birth_year }}
         {% if pregcheck_form.birth_year %}
             {{ pregcheck_form.birth_year }}

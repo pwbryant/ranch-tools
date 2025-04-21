@@ -5,10 +5,20 @@
         <p>There is no animal associated with this ID. To create a new one, provide the birth year (optional) and click the "Create" button.</p>
         <form id="create-animal-form" action="{% url 'cow-create' %}" method="post">
             {% csrf_token %}
-            <label for="new_ear_tag_id">Ear Tag ID</label>
-            <input type="text" id="new_ear_tag_id" name="ear_tag_id" value="{{ ear_tag_id }}" readonly required>
-            <label for="new_birth_year">Birth Year (optional)</label>
-            <input type="text" id="new_birth_year" name="birth_year">
+            <p>
+                <label for="new_ear_tag_id">Ear Tag ID</label>
+                <input type="text" id="new_ear_tag_id" name="ear_tag_id" value="{{ ear_tag_id }}" readonly required>
+    
+            </p>
+            <p>
+                <label for="new_birth_year">Birth Year (optional)</label>
+                <input type="text" id="new_birth_year" name="birth_year">
+                    
+            </p>
+            <p>
+                <label for="new_eid">RFID (optional)</label>
+                <input type="text" id="new_eid" name="eid">                    
+            </p>
             <button id="create-animal-btn" type="submit">Create</button>
             <button id="cancel-create-btn" type="button">Cancel</button>
         </form>

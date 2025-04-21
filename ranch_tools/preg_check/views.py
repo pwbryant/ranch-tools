@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 from urllib.parse import urlencode
 
-from django.db.models import F
+from django.db.models import F, Q
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
@@ -10,20 +10,62 @@ from django.views import View
 from django.views.generic import ListView, CreateView, FormView
 from django.views.generic.edit import UpdateView
 
-from .forms import (
+from ranch_tools.preg_check.forms import (
     AnimalSearchForm,
     CowForm,
     EditPregCheckForm,
     PregCheckForm
 )
-from .models import Cow, CurrentBreedingSeason, PregCheck
+from ranch_tools.preg_check.models import Cow, CurrentBreedingSeason, PregCheck
 
 from pdb import set_trace as bp
 
 
+
+def get_matching_cows(ear_tag_id=None, rfid=None, birth_year=None):
+    '''
+    Return cows that are associated with ear_tag_id and birth_year, if present, OR
+    rfid value.  If both ear_tag_id and rfid are provided, assert that the ids belong
+    to the same cow.
+    '''
+    # Build the query using Q objects
+    query = Q()
+    if ear_tag_id and birth_year:
+        query |= Q(ear_tag_id=ear_tag_id, birth_year=birth_year)
+    elif ear_tag_id:
+        query |= Q(ear_tag_id=ear_tag_id)
+
+    if rfid:
+        query |= Q(eid=rfid)  # Assuming 'eid' is the field for RFID in the Cow model
+
+
+    if not query:
+        return Cow.objects.none()
+
+    matching_cows = Cow.objects.filter(query)
+    if matching_cows.filter(eid=rfid) and matching_cows.filter(ear_tag_id=ear_tag_id):
+        cow = matching_cows.get(eid=rfid)
+        if cow.ear_tag_id != ear_tag_id:
+            raise Exception("Conflicting rfid and ear tag.  Make sure each id is correct.")
+        
+    return matching_cows
+
+
+def get_pregchecks_from_cows(cows):
+    # Build the query using Q objects
+
+    if not cows.exists():
+        return PregCheck.objects.none()
+    query = Q()
+    for cow in cows:
+        query |= Q(cow=cow)
+    pregchecks = PregCheck.objects.filter(query)
+    return pregchecks
+
+
 class PreviousPregCheckListView(View):
     def get(self, request, *args, **kwargs):
-        limit = request.GET.get('limit', 5)
+        limit = int(request.GET.get('limit', 5))
         current_breeding_season = CurrentBreedingSeason.load().breeding_season
         pregchecks = PregCheck.objects.filter(
             breeding_season=current_breeding_season
@@ -40,15 +82,16 @@ class PregCheckListView(ListView):
     context_object_name = 'pregchecks'
 
     def get_queryset(self):
-        ear_tag_id = self.request.GET.get('search_ear_tag_id', None)
+        ear_tag_id = self.request.GET.get('search_ear_tag_id', '')
+        rfid = self.request.GET.get('search_rfid', '')
         birth_year = self.request.GET.get('search_birth_year', None)
-        if ear_tag_id and ear_tag_id.strip().lower() == 'all':
+        if 'all' in (ear_tag_id.strip().lower(), rfid.strip().lower()):
             current_breeding_season = CurrentBreedingSeason.load().breeding_season
             queryset = PregCheck.objects.filter(
                 breeding_season=current_breeding_season
             ).order_by('-check_date' , '-id')
-        elif ear_tag_id:
-            queryset = PregCheck.objects.filter(cow__ear_tag_id=ear_tag_id)
+        elif ear_tag_id or rfid:
+            queryset = get_pregchecks_from_cows(get_matching_cows(ear_tag_id=ear_tag_id, rfid=rfid))
             if birth_year:
                 queryset = queryset.filter(cow__birth_year=birth_year)
             queryset = queryset.order_by('-check_date', '-id')
@@ -58,17 +101,15 @@ class PregCheckListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ear_tag_id = self.request.GET.get('search_ear_tag_id', None)
-        birth_year = self.request.GET.get('search_birth_year', None)
         pregcheck_form = PregCheckForm()
-        animals = Cow.objects.filter(ear_tag_id=ear_tag_id)
+        birth_year = self.request.GET.get('search_birth_year', None)
         if birth_year:
-            animals = animals.filter(birth_year=birth_year)
             pregcheck_form.fields['birth_year'].initial = birth_year
-        animal_exists = None
-        if ear_tag_id:
-            animal_exists = Cow.objects.filter(ear_tag_id=ear_tag_id).exists()
-            pregcheck_form.fields['pregcheck_ear_tag_id'].initial = ear_tag_id
+
+        ear_tag_id = self.request.GET.get('search_ear_tag_id', '')
+        rfid = self.request.GET.get('search_rfid', '')
+        animals = get_matching_cows(ear_tag_id=ear_tag_id, rfid=rfid, birth_year=birth_year)
+        animal_exists = animals.exists()        
 
         animal_count = animals.count()
         cow = None
@@ -76,15 +117,26 @@ class PregCheckListView(ListView):
             cow = animals[0]
             distinct_birth_years = [cow.birth_year]
             birth_year = cow.birth_year
-        else:
+        elif animal_count > 1:
             distinct_birth_years = animals.values_list('birth_year', flat=True).distinct()
+        else:
+            distinct_birth_years = []
+
+        if cow:
+            pregcheck_form.fields['pregcheck_ear_tag_id'].initial = cow.ear_tag_id
+            pregcheck_form.fields['pregcheck_rfid'].initial = cow.eid
+            pregcheck_form.fields['birth_year'].initial = cow.birth_year
 
         search_form = AnimalSearchForm(
-            initial={'search_ear_tag_id': ear_tag_id, 'search_birth_year': birth_year},
+            initial={'search_ear_tag_id': ear_tag_id,
+                     'search_rfid': rfid,
+                     'search_birth_year': birth_year
+            },
             birth_year_choices=[(y, str(y),) for y in distinct_birth_years]
         )
-        pregcheck_form.fields['breeding_season'].initial = datetime.now().year
         current_breeding_season = CurrentBreedingSeason.load().breeding_season
+        pregcheck_form.fields['breeding_season'].initial = current_breeding_season
+
         if animal_count == 1:
             preg_checks_this_season = PregCheck.objects.filter(
                 cow=cow, breeding_season=current_breeding_season
@@ -92,7 +144,7 @@ class PregCheckListView(ListView):
             pregcheck_form.fields['recheck'].initial = preg_checks_this_season > 0
 
         context['current_breeding_season'] = current_breeding_season
-        context['all_preg_checks'] = False if ear_tag_id is None else ear_tag_id.strip().lower() == 'all'
+        context['all_preg_checks'] = ear_tag_id.strip().lower() == 'all'
         context['latest_breeding_season'] = PregCheck.objects.latest('id').breeding_season
         context['search_form'] = search_form
         context['pregcheck_form'] = pregcheck_form
@@ -137,14 +189,21 @@ class PregCheckRecordNewAnimalView(CreateView):
 
     def form_valid(self, form):
         ear_tag_id = form.cleaned_data['pregcheck_ear_tag_id']
+        ear_tag_id = None if not ear_tag_id else ear_tag_id
+        rfid = form.cleaned_data['pregcheck_rfid']
+        rfid = None if not rfid else rfid
         birth_year = form.cleaned_data['birth_year']
         birth_year = None if not birth_year else birth_year
-        if ear_tag_id and birth_year:
-            cow, created = Cow.objects.get_or_create(ear_tag_id=ear_tag_id, birth_year=birth_year)
-            form.instance.cow = cow
-        elif ear_tag_id:
-            cow, created = Cow.objects.get_or_create(ear_tag_id=ear_tag_id)
-            form.instance.cow = cow
+        cow_params = {}
+        if ear_tag_id:
+            cow_params['ear_tag_id'] = ear_tag_id
+        if rfid:
+            cow_params['eid'] = rfid
+        if birth_year:
+            cow_params['birth_year'] = birth_year
+
+        cow = Cow.objects.get(**cow_params)
+        form.instance.cow = cow
 
         return super().form_valid(form)
 
@@ -235,6 +294,22 @@ class CowUpdateView(UpdateView):
     def get_success_url(self):
         # This method might not be called due to our custom redirection in form_valid method, but just in case:
         return reverse('pregcheck-list')
+
+
+class CowExistsView(View):
+    def get(self, request):
+        ear_tag_id = request.GET.get('ear_tag_id')
+        if ear_tag_id:
+            cows =  Cow.objects.filter(ear_tag_id=ear_tag_id)
+            cow_exists = cows.exists()
+            if cows.count() > 1:
+                data = {'exists' : cow_exists, 'multiple_matches': True}    
+            else:
+                data = {'exists': cow_exists}
+
+            return JsonResponse(data)
+        else:
+            return JsonResponse({'error': 'check_existing_ear_tag_id parameter is required'}, status=400)
 
 
 class PregCheckEditView(View):

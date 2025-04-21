@@ -16,11 +16,13 @@ class AnimalSearchForm(forms.Form):
             widget=forms.RadioSelect,
             required=False
         )
-    search_ear_tag_id = forms.CharField(label='Ear Tag ID')
+    search_ear_tag_id = forms.CharField(label='Ear Tag ID', required=False)
+    search_rfid = forms.CharField(label='RFID', required=False)
 
 
 class PregCheckForm(forms.ModelForm):
     pregcheck_ear_tag_id = forms.CharField(label='Ear Tag ID', required=False)
+    pregcheck_rfid = forms.CharField(label='RFID', required=False)
     birth_year = forms.CharField(required=False, widget=forms.HiddenInput())
     is_pregnant = forms.ChoiceField(
         label='Status',
@@ -43,13 +45,19 @@ class PregCheckForm(forms.ModelForm):
 class CowForm(forms.ModelForm):
     class Meta:
         model = Cow
-        fields = ['ear_tag_id', 'birth_year']
+        fields = ['ear_tag_id', 'birth_year', 'eid']
 
     ear_tag_id = forms.CharField(
         label='Ear Tag ID',
         max_length=255,
         required=True,
         widget=forms.TextInput(attrs={'readonly': 'readonly'})
+    )
+    eid = forms.CharField(
+        label='RFID (optional)',
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholer': 'RFID'})
     )
     birth_year = forms.CharField(
         label='Birth Year (optional)',

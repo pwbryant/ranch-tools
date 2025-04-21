@@ -132,7 +132,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function populatePregcheckForm(pregcheckData) {
         // Populate text inputs
-        document.getElementById('id_pregcheck_ear_tag_id').value = pregcheckData.cow_id;
+        console.log('populate pregcheck form funk')
+        if (isRFId(pregcheckData.cow_id)) {
+            document.getElementById('id_pregcheck_rfid').value = pregcheckData.cow_id;
+        } else {
+            document.getElementById('id_pregcheck_ear_tag_id').value = pregcheckData.cow_id;
+        }
+
         document.getElementById('id_birth_year').value = pregcheckData.birth_year;
         document.getElementById('breeding_season').value = pregcheckData.breeding_season;
         document.getElementById('id_comments').value = pregcheckData.comments;
@@ -319,17 +325,33 @@ document.addEventListener('DOMContentLoaded', function() {
 	
 	function handleCreateAnimal() {
 		const noAnimalModal = document.getElementById('no-animal-modal');
+        // const noAnimaRFIDlModal = document.getElementById('no-animal-rfid-modal');
 		
 		function openNoAnimalModal(earTagId) {
 			noAnimalModal.style.display = 'block';
 			document.getElementById('new_ear_tag_id').value = earTagId;
 		}
 
+        function openNoAnimalRFIdModal(rfidVal) {
+            alert(`No animal found with this RFID: ${rfidVal}. Please use ear tag.`);
+		}
+
 		function closeNoAnimalModal() {
 			noAnimalModal.style.display = 'none';
+            // noAnimaRFIDlModal.style.display = 'none';
 		}
+
+        function isRFId(earTagId) {
+            return earTagId.length > 6;
+        }
         const earTagId = document.getElementById('id_search_ear_tag_id').value;
-		if (!animalExists && earTagId && earTagId != 'all') {
+        const rfid = document.getElementById('id_search_rfid').value;
+
+        console.log('ear and rfid', earTagId, rfid, animalExists);
+        if (!animalExists && !earTagId && rfid) {
+            openNoAnimalRFIdModal(earTagId)
+        }
+		else if (!animalExists && earTagId && earTagId != 'all') {
 			openNoAnimalModal(earTagId);
 		} else {
 			closeNoAnimalModal();
@@ -369,6 +391,89 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Check for Cow Existence by ear tag id
+    function checkCowExistence(earTagId) {
+        const resultContainer = document.getElementById('check-existing-ear-tag-result');
+        resultContainer.innerHTML = ''; // Clear any existing content
+    
+        fetch(`/cow/exists?ear_tag_id=${earTagId}`)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Error checking cow existence');
+                }
+            })
+            .then(data => {
+                if (data.exists) {
+                    // Create the form element
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/cows/${earTagId}/update`;
+    
+                    // Add CSRF token input (if using Django)
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                    if (csrfToken) {
+                        const csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = 'csrfmiddlewaretoken';
+                        csrfInput.value = csrfToken.value;
+                        form.appendChild(csrfInput);
+                    }
+    
+                    // Create and append the RFID input field
+                    const rfidInput = document.createElement('input');
+                    rfidInput.type = 'hidden';
+                    rfidInput.name = 'eid';
+                    rfidInput.value = data.rfid || ''; // Use the fetched RFID value
+                    form.appendChild(rfidInput);
+    
+                    // Create and append the Ear Tag ID input field
+                    const earTagIdInput = document.createElement('input');
+                    earTagIdInput.type = 'hidden';
+                    earTagIdInput.name = 'ear_tag_id';
+                    earTagIdInput.value = earTagId;
+                    form.appendChild(earTagIdInput);
+    
+                    // Create and append the Birth Year input field
+                    const birthYearInput = document.createElement('input');
+                    birthYearInput.type = 'hidden';
+                    birthYearInput.name = 'birth_year';
+                    birthYearInput.value = data.birth_year || ''; // Use the fetched Birth Year value
+                    form.appendChild(birthYearInput);
+    
+                    // Create and append the submit button
+                    const submitButton = document.createElement('button');
+                    submitButton.type = 'submit';
+                    submitButton.textContent = 'Update Cow';
+                    form.appendChild(submitButton);
+    
+                    // Append the form to the result container
+                    resultContainer.appendChild(form);
+                } else {
+                    // If the cow does not exist, show a message or other UI elements
+                    const message = document.createElement('p');
+                    message.textContent = 'Cow does not exist. Please create a new record.';
+                    resultContainer.appendChild(message);
+    
+                    const createNewCowButton = document.createElement('button');
+                    createNewCowButton.textContent = 'Create New Cow';
+                    createNewCowButton.addEventListener('click', function () {
+                        // Handle create new cow logic here
+                    });
+                    resultContainer.appendChild(createNewCowButton);
+                }
+            })
+            .catch(error => {
+                console.error('Error checking cow existence:', error);
+            });
+    }
+
+    document.getElementById('check-existing-ear-tag-btn').addEventListener('click', function() {
+        const earTagId = document.getElementById('check_existing_ear_tag_id').value;
+        checkCowExistence(earTagId);
+    });
+
     // Edit Cow
     function listenToEditCowModal() {
         listenToModalClosers('editCowModal', ['#edit-cow-modal-cancel-btn', '#editCowModal .close']);
@@ -385,11 +490,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     listenToCreateSameIdCowModal();
 
-
     // Create new ID cow
     document.querySelector('#no-animal-modal .close').addEventListener('click', closeNoAnimalModal);
+    document.querySelector('#no-animal-rfid-modal .close').addEventListener('click', closeNoAnimalModal);
     document.getElementById('cancel-create-btn').addEventListener('click', closeNoAnimalModal);
-
 
 	document.getElementById('pregcheck-form').addEventListener('submit', handleFormSubmit);
 	document.querySelector('.close').addEventListener('click', handleModalCloseBtnClick);
