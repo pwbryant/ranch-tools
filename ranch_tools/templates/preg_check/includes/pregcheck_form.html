@@ -11,6 +11,9 @@
         {% if pregcheck_form.birth_year %}
             {{ pregcheck_form.birth_year }}
         {% endif %}
+        <label for="{{ pregcheck_form.check_date.id_for_label }}">Preg Check Date</label>
+        {{ pregcheck_form.check_date }}
+
         <label for="breeding_season">Breeding Season</label>
         <input type="text" id="breeding_season" name="breeding_season" value="{{ current_breeding_season }}" readonly>
 

@@ -126,6 +126,7 @@ class PregCheckListView(ListView):
             pregcheck_form.fields['pregcheck_ear_tag_id'].initial = cow.ear_tag_id
             pregcheck_form.fields['pregcheck_rfid'].initial = cow.eid
             pregcheck_form.fields['birth_year'].initial = cow.birth_year
+            pregcheck_form.fields['check_date'].initial = datetime.today().date() 
 
         search_form = AnimalSearchForm(
             initial={'search_ear_tag_id': ear_tag_id,

@@ -24,6 +24,8 @@ class PregCheckForm(forms.ModelForm):
     pregcheck_ear_tag_id = forms.CharField(label='Ear Tag ID', required=False)
     pregcheck_rfid = forms.CharField(label='RFID', required=False)
     birth_year = forms.CharField(required=False, widget=forms.HiddenInput())
+    check_date = forms.DateField(
+        label='Check Date', )
     is_pregnant = forms.ChoiceField(
         label='Status',
         choices=((True, 'Pregnant'), (False, 'Open')),
