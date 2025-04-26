@@ -130,31 +130,31 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    function populatePregcheckForm(pregcheckData) {
-        // Populate text inputs
-        console.log('populate pregcheck form funk')
-        if (isRFId(pregcheckData.cow_id)) {
-            document.getElementById('id_pregcheck_rfid').value = pregcheckData.cow_id;
-        } else {
-            document.getElementById('id_pregcheck_ear_tag_id').value = pregcheckData.cow_id;
-        }
+    // function populatePregcheckForm(pregcheckData) {
+    //     // Populate text inputs
+    //     console.log('populate pregcheck form funk')
+    //     if (isRFId(pregcheckData.cow_id)) {
+    //         document.getElementById('id_pregcheck_rfid').value = pregcheckData.cow_id;
+    //     } else {
+    //         document.getElementById('id_pregcheck_ear_tag_id').value = pregcheckData.cow_id;
+    //     }
 
-        document.getElementById('id_birth_year').value = pregcheckData.birth_year;
-        document.getElementById('breeding_season').value = pregcheckData.breeding_season;
-        document.getElementById('id_comments').value = pregcheckData.comments;
+    //     document.getElementById('id_birth_year').value = pregcheckData.birth_year;
+    //     document.getElementById('breeding_season').value = pregcheckData.breeding_season;
+    //     document.getElementById('id_comments').value = pregcheckData.comments;
 
-        // Set radio button for pregnancy status
-        const isPregnantRadio = document.getElementById(pregcheckData.is_pregnant ? 'id_is_pregnant_0' : 'id_is_pregnant_1');
-        if (isPregnantRadio) {
-            isPregnantRadio.checked = true;
-        }
+    //     // Set radio button for pregnancy status
+    //     const isPregnantRadio = document.getElementById(pregcheckData.is_pregnant ? 'id_is_pregnant_0' : 'id_is_pregnant_1');
+    //     if (isPregnantRadio) {
+    //         isPregnantRadio.checked = true;
+    //     }
 
-        // Set checkbox for recheck
-        document.getElementById('id_recheck').checked = pregcheckData.is_recheck;
+    //     // Set checkbox for recheck
+    //     document.getElementById('id_recheck').checked = pregcheckData.is_recheck;
 
-        // Optionally, scroll to the form
-        document.getElementById('pregcheck-form').scrollIntoView({ behavior: 'smooth' });
-    }
+    //     // Optionally, scroll to the form
+    //     document.getElementById('pregcheck-form').scrollIntoView({ behavior: 'smooth' });
+    // }
 
     function updateStats() {
         const content = document.getElementById('stats-content');
@@ -327,13 +327,15 @@ document.addEventListener('DOMContentLoaded', function() {
 		const noAnimalModal = document.getElementById('no-animal-modal');
         // const noAnimaRFIDlModal = document.getElementById('no-animal-rfid-modal');
 		
-		function openNoAnimalModal(earTagId) {
+		function openNoAnimalModal(earTagId, rfid) {
+            console.log('open no animal modal', earTagId, rfid);
 			noAnimalModal.style.display = 'block';
-			document.getElementById('new_ear_tag_id').value = earTagId;
-		}
-
-        function openNoAnimalRFIdModal(rfidVal) {
-            alert(`No animal found with this RFID: ${rfidVal}. Please use ear tag.`);
+			if (earTagId) {
+                document.getElementById('new_ear_tag_id').value = earTagId;
+            }
+			if (rfid) {
+                document.getElementById('new_eid').value = rfid;
+            }
 		}
 
 		function closeNoAnimalModal() {
@@ -341,18 +343,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // noAnimaRFIDlModal.style.display = 'none';
 		}
 
-        function isRFId(earTagId) {
-            return earTagId.length > 6;
-        }
         const earTagId = document.getElementById('id_search_ear_tag_id').value;
         const rfid = document.getElementById('id_search_rfid').value;
 
         console.log('ear and rfid', earTagId, rfid, animalExists);
-        if (!animalExists && !earTagId && rfid) {
-            openNoAnimalRFIdModal(earTagId)
-        }
-		else if (!animalExists && earTagId && earTagId != 'all') {
-			openNoAnimalModal(earTagId);
+        if (!animalExists && (earTagId || rfid) && earTagId != 'all' && rfid != 'all') {
+			openNoAnimalModal(earTagId, rfid);
 		} else {
 			closeNoAnimalModal();
 		}

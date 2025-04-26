@@ -1,6 +1,7 @@
 from django.urls import path
 from ranch_tools.preg_check.views import (
     CowCreateView,
+    CowCreateUpdateView,
     CowExistsView,
     CowUpdateView,
     PregCheckDetailView,
@@ -15,6 +16,7 @@ from ranch_tools.preg_check.views import (
 
 urlpatterns = [
     path('cows/create/', CowCreateView.as_view(), name='cow-create'),
+    path('cows/update/', CowCreateUpdateView.as_view(), name='cow-create-update'),
     path('cows/<int:pk>/update/', CowUpdateView.as_view(), name='cow-update'),
     path('pregchecks/', PregCheckListView.as_view(), name='pregcheck-list'),
     path('pregchecks/current-breeding-season/', UpdateCurrentBreedingSeasonView.as_view(), name='pregcheck-breeding-season'),

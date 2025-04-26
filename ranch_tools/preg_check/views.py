@@ -258,6 +258,57 @@ class PregCheckSummaryStatsView(View):
         return JsonResponse(summary_stats)
 
 
+
+class CowCreateUpdateView(FormView):
+    form_class = CowForm
+    template_name = 'preg_check/includes/no_animal_modal.html'
+    # success_url = reverse('pregcheck-list')
+
+    def get_success_url(self):
+        return reverse('pregcheck-list')  # Replace with the appropriate URL name
+
+    def get_object(self):
+        ear_tag_id = self.request.POST.get('ear_tag_id')
+        rfid = self.request.POST.get('rfid')
+        birth_year = self.request.POST.get('birth_year')
+        
+        cows = Cow.objects.none()
+        if ear_tag_id:
+            cows = Cow.objects.filter(ear_tag_id=ear_tag_id)
+            if cows.count() > 1 and birth_year:
+                cows = cows.filter(birth_year=birth_year)
+        if rfid:
+            cows = Cow.objects.filter(eid=rfid)
+
+        cow_count = cows.count()
+        if cow_count > 1:
+            raise Exception('There is more than one cow associated with this information.')
+        elif cow_count == 1:
+            return cows[0]
+        else:
+            return None
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        cow = self.get_object()
+        if cow:
+            kwargs['instance'] = cow
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cow = self.get_object()
+        context['is_update'] = cow is not None
+        context['object'] = cow
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save()
+        is_valid = super().form_valid(form)
+        return super().form_valid(form)
+
+
 class CowCreateView(CreateView):
     model = Cow
     form_class = CowForm
@@ -266,7 +317,8 @@ class CowCreateView(CreateView):
         cow = self.object
         query_parameters = {
             'search_ear_tag_id': cow.ear_tag_id,
-            'search_birth_year': cow.birth_year
+            'search_birth_year': cow.birth_year,
+            'search_rfid': cow.eid
         }
         url = reverse('pregcheck-list') + '?' + urlencode(query_parameters)
         return url
@@ -285,7 +337,8 @@ class CowUpdateView(UpdateView):
         redirect_url = reverse('pregcheck-list')
         query_parameters = {
             'search_ear_tag_id': self.object.ear_tag_id,
-            'search_birth_year': form.cleaned_data['birth_year']
+            'search_birth_year': form.cleaned_data['birth_year'],
+            'search_rfid': self.object.rfid
         }
         full_redirect_url = redirect_url + '?' + urlencode(query_parameters)
         
