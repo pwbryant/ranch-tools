@@ -259,14 +259,19 @@ class PregCheckSummaryStatsView(View):
         return JsonResponse(summary_stats)
 
 
-
 class CowCreateUpdateView(FormView):
     form_class = CowForm
     template_name = 'preg_check/includes/no_animal_modal.html'
     # success_url = reverse('pregcheck-list')
 
     def get_success_url(self):
-        return reverse('pregcheck-list')  # Replace with the appropriate URL name
+        cow = self.object
+        query_parameters = {
+            'search_ear_tag_id': cow.ear_tag_id,
+            'search_birth_year': cow.birth_year,
+            'search_rfid': cow.eid
+        }
+        return reverse('pregcheck-list') + '?' + urlencode(query_parameters)
 
     def get_object(self):
         ear_tag_id = self.request.POST.get('ear_tag_id')
@@ -308,6 +313,9 @@ class CowCreateUpdateView(FormView):
         self.object = form.save()
         is_valid = super().form_valid(form)
         return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        raise Exception(f'Form is invalid: {form.errors}')
 
 
 class CowCreateView(CreateView):
