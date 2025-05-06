@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class SingletonModel(models.Model):
@@ -46,11 +47,16 @@ class Cow(models.Model):
 
 class PregCheck(models.Model):
     breeding_season = models.IntegerField()
-    check_date = models.DateField(auto_now_add=True)
+    check_date = models.DateField(null=True, blank=True)
     comments = models.TextField(blank=True)
     cow = models.ForeignKey('Cow', on_delete=models.CASCADE, blank=True, null=True)
     is_pregnant = models.BooleanField(null=True)
     recheck = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.check_date:
+            self.check_date = timezone.now().date()
+        super().save(*args, **kwargs)
 
     def __repr__(self):
         preg_status = {True: 'Pregnant', False: 'Open'}.get(self.is_pregnant, 'None')
