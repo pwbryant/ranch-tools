@@ -255,6 +255,22 @@ document.addEventListener('DOMContentLoaded', function() {
 		var messageContainer = document.getElementById('message-container');
 		var modal = document.getElementById('message-modal');
 		var formData = new FormData(form);
+        
+        
+        // Validate ear tag ID and "No ID" checkbox
+        const earTagIdValue = formData.get('pregcheck_ear_tag_id');
+        const noIdChecked = formData.get('no_id') === 'on' || formData.get('no_id') === true;
+        if ((!earTagIdValue || !earTagIdValue.trim()) && !noIdChecked) {
+            messageContainer.textContent = 'If Ear Tag ID is blank, you must check "No ID".';
+            messageContainer.classList.add('error');
+            modal.style.display = 'block';
+            return;
+        } else if (earTagIdValue && earTagIdValue.trim() && noIdChecked) {
+            messageContainer.textContent = 'If Ear Tag ID is provided, "No ID" should not be checked.';
+            messageContainer.classList.add('error');
+            modal.style.display = 'block';
+            return;
+        }
 
 		var xhr = new XMLHttpRequest();
 		xhr.open(form.method, form.action, true);
