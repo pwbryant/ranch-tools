@@ -156,6 +156,25 @@ class PregCheckListView(ListView):
         return context
 
 
+class PregCheckListBySeasonView(ListView):
+    model = PregCheck
+    template_name = 'preg_check/pregcheck_by_season_list.html'
+    context_object_name = 'pregchecks'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        breeding_season = self.kwargs.get('breeding_season')
+        return qs.filter(breeding_season=breeding_season)
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     breakpoint()
+
+    #     return context
+
+
+
+
 class UpdateCurrentBreedingSeasonView(View):
 
     def post(self, request, *args, **kwargs):
@@ -189,6 +208,7 @@ class PregCheckRecordNewAnimalView(CreateView):
         return initial
 
     def form_valid(self, form):
+
         ear_tag_id = form.cleaned_data['pregcheck_ear_tag_id']
         ear_tag_id = None if not ear_tag_id else ear_tag_id
         rfid = form.cleaned_data['pregcheck_rfid']
@@ -203,8 +223,9 @@ class PregCheckRecordNewAnimalView(CreateView):
         if birth_year:
             cow_params['birth_year'] = birth_year
 
-        cow = Cow.objects.get(**cow_params)
-        form.instance.cow = cow
+        if cow_params:
+            cow = Cow.objects.get(**cow_params)
+            form.instance.cow = cow
 
         return super().form_valid(form)
 
@@ -376,6 +397,7 @@ class CowExistsView(View):
 
 class PregCheckEditView(View):
     def post(self, request, pregcheck_id):
+
         try:
             pregcheck = PregCheck.objects.get(pk=pregcheck_id)
         except PregCheck.DoesNotExist:
