@@ -362,6 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Populate form fields in the edit modal with data from pregcheckData
         document.getElementById('edit-ear-tag-id').value = pregcheckData.ear_tag_id;
         document.getElementById('edit-birth-year').value = pregcheckData.animal_birth_year;
+        document.getElementById('edit-check_date').value = pregcheckData.check_date;
         document.getElementById('edit-breeding-season').value = pregcheckData.breeding_season;
         document.getElementById('edit-pregcheck-id').value = pregcheckData.id;
         document.getElementById('edit-is_pregnant').value = pregcheckData.is_pregnant.toString();

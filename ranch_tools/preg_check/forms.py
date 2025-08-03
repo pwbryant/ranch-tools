@@ -75,7 +75,7 @@ class EditPregCheckForm(forms.ModelForm):
 
     class Meta:
         model = PregCheck
-        fields = ['ear_tag_id', 'birth_year', 'breeding_season', 'is_pregnant', 'comments', 'recheck']
+        fields = ['ear_tag_id', 'birth_year', 'check_date', 'breeding_season', 'is_pregnant', 'comments', 'recheck']
 
     def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)

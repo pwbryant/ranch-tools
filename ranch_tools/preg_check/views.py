@@ -397,7 +397,6 @@ class CowExistsView(View):
 
 class PregCheckEditView(View):
     def post(self, request, pregcheck_id):
-
         try:
             pregcheck = PregCheck.objects.get(pk=pregcheck_id)
         except PregCheck.DoesNotExist:
