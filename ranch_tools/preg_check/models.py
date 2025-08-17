@@ -53,10 +53,8 @@ class PregCheck(models.Model):
     is_pregnant = models.BooleanField(null=True)
     recheck = models.BooleanField(default=False)
 
-    def save(self, *args, **kwargs):
-        if not self.check_date:
-            self.check_date = timezone.now().date()
-        super().save(*args, **kwargs)
+    created_on = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    last_modified = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __repr__(self):
         preg_status = {True: 'Pregnant', False: 'Open'}.get(self.is_pregnant, 'None')

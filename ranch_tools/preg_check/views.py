@@ -126,7 +126,10 @@ class PregCheckListView(ListView):
             pregcheck_form.fields['pregcheck_ear_tag_id'].initial = cow.ear_tag_id
             pregcheck_form.fields['pregcheck_rfid'].initial = cow.eid
             pregcheck_form.fields['birth_year'].initial = cow.birth_year
-            pregcheck_form.fields['check_date'].initial = datetime.today().date() 
+            last_pregcheck = PregCheck.objects.last()
+            last_pregcheck_created_date = last_pregcheck.created_on.date()
+            if last_pregcheck_created_date == datetime.today().date():
+                pregcheck_form.fields['check_date'].initial = last_pregcheck.check_date
 
         search_form = AnimalSearchForm(
             initial={'search_ear_tag_id': ear_tag_id,
@@ -166,14 +169,6 @@ class PregCheckListBySeasonView(ListView):
         breeding_season = self.kwargs.get('breeding_season')
         return qs.filter(breeding_season=breeding_season)
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     breakpoint()
-
-    #     return context
-
-
-
 
 class UpdateCurrentBreedingSeasonView(View):
 
@@ -208,7 +203,6 @@ class PregCheckRecordNewAnimalView(CreateView):
         return initial
 
     def form_valid(self, form):
-
         ear_tag_id = form.cleaned_data['pregcheck_ear_tag_id']
         ear_tag_id = None if not ear_tag_id else ear_tag_id
         rfid = form.cleaned_data['pregcheck_rfid']
@@ -356,7 +350,7 @@ class CowCreateView(CreateView):
 
 class CowUpdateView(UpdateView):
     model = Cow
-    fields = ['birth_year']
+    fields = ['birth_year', 'eid']
     template_name = 'path_to_template.html'  # Replace with the path to your template for updating the cow
     
     def form_valid(self, form):
@@ -368,7 +362,7 @@ class CowUpdateView(UpdateView):
         query_parameters = {
             'search_ear_tag_id': self.object.ear_tag_id,
             'search_birth_year': form.cleaned_data['birth_year'],
-            'search_rfid': self.object.rfid
+            'search_rfid': self.object.eid
         }
         full_redirect_url = redirect_url + '?' + urlencode(query_parameters)
         

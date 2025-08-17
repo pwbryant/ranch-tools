@@ -594,25 +594,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	window.addEventListener('click', handleWindowClick);
 
-	function editPregCheckModalSetup() {
-        const earTagIdInput = document.getElementById('edit-ear-tag-id');
-        const initialAnimalId = earTagIdInput.value;
-        // Initially hide the birth year div
-        const birthYearDiv = document.querySelector('.form-group:has(#edit-birth-year)');
-        birthYearDiv.style.display = 'none';
-        // Add event listener for input changes
-        earTagIdInput.addEventListener('input', function() {
-            if (this.value !== initialAnimalId) {
-                birthYearDiv.style.display = 'block';
-                const birthYearInput = document.getElementById('edit-birth-year');
-                birthYearInput.value = '';
-            } else {
-                birthYearDiv.style.display = 'none';
-            }
-        });
-    }
-
-
 	// Initial Actions
     updateStats();
     updatePreviousPregcheckList();
