@@ -600,6 +600,5 @@ document.addEventListener('DOMContentLoaded', function() {
     handleCreateAnimal();
     handleEditCowModal();
     handleCreateCowModal();
-    editPregCheckModalSetup();
 });
 
