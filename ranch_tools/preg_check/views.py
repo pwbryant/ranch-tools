@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 from urllib.parse import urlencode
 
@@ -128,7 +128,7 @@ class PregCheckListView(ListView):
             pregcheck_form.fields['birth_year'].initial = cow.birth_year
             last_pregcheck = PregCheck.objects.last()
             last_pregcheck_created_date = last_pregcheck.created_on.date()
-            if last_pregcheck_created_date == datetime.today().date():
+            if last_pregcheck_created_date == datetime.today().astimezone(timezone.utc).date():
                 pregcheck_form.fields['check_date'].initial = last_pregcheck.check_date
 
         search_form = AnimalSearchForm(
