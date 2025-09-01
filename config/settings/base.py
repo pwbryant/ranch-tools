@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # third party
-    'django_extensions',
+#    'django_extensions',
 
     # local apps
     'users',
