@@ -2,12 +2,26 @@ const { app, BrowserWindow } = require('electron');
 const spawn = require('cross-spawn');
 const path = require('path');
 const http = require('http');
-
-let mainWindow;
-let djangoProcess;
+const fs = require('fs');
 
 // Detect if running in development or production
 const isDev = !app.isPackaged;
+
+
+// Create log file path
+const logPath = isDev
+    ? path.join(__dirname, 'debug.log')
+    : path.join(process.resourcesPath, '..', 'debug.log'); // Goes to install directory
+
+
+function writeLog(message) {
+    const timestamp = new Date().toISOString();
+    const logEntry = `${timestamp}: ${message}\n`;
+    fs.appendFileSync(logPath, logEntry);
+}
+
+let mainWindow;
+let djangoProcess;
 
 // Set paths based on environment
 const DJANGO_PATH = isDev 
@@ -22,12 +36,13 @@ console.log('Environment:', isDev ? 'Development' : 'Production');
 console.log('Django Path:', DJANGO_PATH);
 console.log('Python Path:', PYTHON_PATH);
 
-function waitForDjango(callback, maxAttempts = 30) {
+function waitForDjango(callback, maxAttempts = 100) {
     let attempts = 0;
     
     const checkDjango = () => {
         attempts++;
         const req = http.get('http://localhost:8000/pregchecks', (res) => {
+            writeLog('Django is ready!');
             console.log('Django is ready!');
             callback();
         });
@@ -47,7 +62,17 @@ function waitForDjango(callback, maxAttempts = 30) {
 
 function startDjango() {
     console.log('Starting Django server...');
-    
+    console.log('isDev:', isDev);
+    console.log('Django Path exists:', require('fs').existsSync(DJANGO_PATH));
+    console.log('Python Path exists:', require('fs').existsSync(PYTHON_PATH));
+
+    writeLog('Starting Django server...');
+    writeLog(`isDev: ${isDev}`);
+    writeLog(`Django Path: ${DJANGO_PATH}`);
+    writeLog(`Python Path: ${PYTHON_PATH}`);
+    writeLog(`Django Path exists: ${fs.existsSync(DJANGO_PATH)}`);
+    writeLog(`Python Path exists: ${fs.existsSync(PYTHON_PATH)}`);
+
     const SETTINGS_MODULE = 'config.settings.dev';
     
     // Fixed: Use djangoProcess (not debugProcess) and clean up the Python command
@@ -76,10 +101,12 @@ execute_from_command_line(['manage.py', 'runserver', '8000', '--noreload', '--se
     });
     
     djangoProcess.stderr.on('data', (data) => {
+        writeLog(`Django Error: ${data}`);
         console.log(`Django Error: ${data}`);
     });
 
     djangoProcess.on('error', (error) => {
+        writeLog(`Failed to start Django: ${error}`);
         console.error('Failed to start Django:', error);
     });
 

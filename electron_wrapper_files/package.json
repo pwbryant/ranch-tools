@@ -45,9 +45,7 @@
       "allowToChangeInstallationDirectory": true,
       "allowElevation": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": false,
-      "installerIcon": "assets/icon.ico",
-      "uninstallerIcon": "assets/icon.ico"
+      "createStartMenuShortcut": false
     }
   },
   "author": "Paul Bryant",
